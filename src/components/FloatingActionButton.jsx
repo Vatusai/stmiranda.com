@@ -41,7 +41,7 @@ const FloatingActionButton = () => {
     {
       icon: MdEmail,
       label: t.floatingButton.labels.email,
-      action: () => window.open("mailto:rodrigolagunasmusic@gmail.com", "_blank"),
+      action: () => window.open("mailto:smirandar712@gmail.com", "_blank"),
       bgColor: "bg-gray hover:bg-blue-600",
       delay: "delay-75",
       labelColor: "text-blue-300", // Color personalizado para Email
@@ -50,7 +50,7 @@ const FloatingActionButton = () => {
     {
       icon: BsWhatsapp,
       label: t.floatingButton.labels.whatsapp,
-      action: () => window.open("https://wa.me/50683384214", "_blank"),
+      action: () => window.open("https://wa.me/50672315028", "_blank"),
       bgColor: "bg-green-500 hover:bg-green-600",
       delay: "delay-100",
       labelColor: "text-green-300", // Color personalizado para WhatsApp
@@ -59,7 +59,7 @@ const FloatingActionButton = () => {
     {
       icon: MdCall,
       label: t.floatingButton.labels.call,
-      action: () => window.open("tel:+50683384214", "_blank"),
+      action: () => window.open("tel:+50672315028", "_blank"),
       bgColor: "bg-gray hover:bg-blue-600",
       delay: "delay-150",
       labelColor: "text-yellow-300", // Color personalizado para Llamar

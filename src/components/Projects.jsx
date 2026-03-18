@@ -14,16 +14,16 @@ const Projects = () => {
   const content = getContent(language);
   const { Projects } = content;
   return (
-    <section className="section-pop-artist alternate" id="projects">
+    <section className="section-pop-artist alternate relative" id="projects">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-32 right-20 w-40 h-40 bg-accent/5 rounded-full blur-2xl"></div>
         <div className="absolute bottom-32 left-20 w-32 h-32 bg-secondary/5 rounded-full blur-2xl"></div>
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12 sm:mb-16">
           <h2 className="section-title-pop" data-aos="fade-down">
             {Projects.title}
           </h2>
@@ -72,9 +72,9 @@ const Projects = () => {
                 clickable: true,
                 dynamicBullets: true,
               }}
-              spaceBetween={20}
+              spaceBetween={16}
               modules={[Pagination]}
-              className="pb-16 max-w-md mx-auto"
+              className="pb-12 sm:pb-16 w-full max-w-md mx-auto"
             >
               {Projects.project_content.map((content, i) => (
                 <SwiperSlide

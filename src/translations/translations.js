@@ -110,16 +110,16 @@ export const translations = {
       title: "Formulario para Eventos",
       subtitle: "Cotización y Reservación",
       social: {
-        email: "rodrigolagunasmusic@gmail.com",
-        phone: "+506 8338 4214",
+        email: "smirandar712@gmail.com",
+        phone: "+506 7231 5028",
         youtube: "YouTube Channel",
         instagram: "RodrigoLagunasMusic", 
         facebook: "Facebook Page"
       }
     },
     footer: {
-      text: "All © Copy Right Reserved 2025",
-      subtitle: "© All Rights Reserved 2025 • Professional Musician",
+      text: "All © Copy Right Reserved 2026",
+      subtitle: "© All Rights Reserved 2026 • Professional Musician",
       features: {
         performances: "🎻 Elegant Performances",
         arrangements: "🎼 Custom Arrangements", 
@@ -307,16 +307,16 @@ export const translations = {
       title: "Event Form",
       subtitle: "Quote and Reservation",
       social: {
-        email: "rodrigolagunasmusic@gmail.com",
-        phone: "+506 8338 4214", 
+        email: "smirandar712@gmail.com",
+        phone: "+506 7231 5028", 
         youtube: "YouTube Channel",
         instagram: "RodrigoLagunasMusic",
         facebook: "Facebook Page"
       }
     },
     footer: {
-      text: "All © Copy Right Reserved 2025",
-      subtitle: "© All Rights Reserved 2025 • Professional Musician", 
+      text: "All © Copy Right Reserved 2026",
+      subtitle: "© All Rights Reserved 2026 • Professional Musician", 
       features: {
         performances: "🎻 Elegant Performances",
         arrangements: "🎼 Custom Arrangements",

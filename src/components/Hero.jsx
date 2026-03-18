@@ -19,7 +19,7 @@ const Hero = () => {
         <div className="music-note-decoration absolute bottom-1/3 right-1/3 text-pink">♬</div>
       </div>
 
-      <div className="container mx-auto px-2 py-4 sm:px-6 sm:py-12 lg:py-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-20">
         <div className="min-h-[calc(100vh-5rem)] sm:min-h-[calc(100vh-6rem)] flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-8 sm:gap-8 lg:gap-12">
 
           {/* Main Content - Left Side */}
@@ -45,7 +45,7 @@ const Hero = () => {
             </div>
 
             {/* Stats Grid - Modern Music Industry Focus */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 max-w-2xl mx-auto lg:mx-0">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-2xl mx-auto">
               {hero.hero_content.map((content, i) => (
                 <div
                   key={i}

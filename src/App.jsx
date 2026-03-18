@@ -20,8 +20,6 @@ import FloatingActionButton from "./components/FloatingActionButton";
 import MovingOrbs from "./components/MovingOrbs";
 // Mouse-following glow effect utility
 import { initGlowEffect } from "./utils/glowEffect";
-// Mobile centering enforcement utility
-import { initMobileCentering } from "./utils/mobileCenter";
 // Language Context Provider
 import { LanguageProvider, useLanguage } from "./contexts/LanguageContext";
 import { translations } from "./translations/translations";
@@ -32,9 +30,6 @@ const AppContent = () => {
   
   // Initialize effects when component mounts
   useEffect(() => {
-    // Initialize mobile centering first (highest priority)
-    const mobileCleanup = initMobileCentering();
-    
     // Delay glow effect initialization to ensure all components are rendered
     const glowTimer = setTimeout(() => {
       initGlowEffect();
@@ -42,7 +37,6 @@ const AppContent = () => {
 
     return () => {
       clearTimeout(glowTimer);
-      if (mobileCleanup) mobileCleanup();
     };
   }, []);
 

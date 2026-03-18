@@ -17,6 +17,30 @@ import { GrMail } from "react-icons/gr";
 import { MdCall } from "react-icons/md";
 import { BsInstagram } from "react-icons/bs";
 
+const customStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    width: "90%",
+    maxWidth: "400px",
+    maxHeight: "90vh",
+    overflow: "auto",
+    background: "linear-gradient(135deg, #1A1A2E 0%, #16213E 100%)",
+    border: "1px solid rgba(139, 92, 246, 0.3)",
+    borderRadius: "16px",
+    padding: "1.5rem",
+    color: "#FFFFFF",
+  },
+  overlay: {
+    backgroundColor: "rgba(15, 15, 35, 0.85)",
+    backdropFilter: "blur(8px)",
+  },
+};
+
 const ContactWizard = () => {
   const { language } = useLanguage();
   const t = translations[language];
@@ -139,50 +163,47 @@ const ContactWizard = () => {
     },
   ];
 
-  // Progress indicator component
+  // Progress indicator component - MOBILE FIXED
   const ProgressIndicator = () => (
-    <div className="w-full mb-8">
-      <div className="flex items-center justify-between mb-4">
+    <div className="w-full mb-6 sm:mb-8">
+      <div className="flex items-start justify-between relative">
+        {/* Background connecting line */}
+        <div className="absolute top-5 sm:top-6 left-0 right-0 h-0.5 bg-gray-700 mx-6 sm:mx-8">
+          <div 
+            className="h-full bg-green-500 transition-all duration-500"
+            style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
+          ></div>
+        </div>
+        
         {steps.map((step, index) => {
           const Icon = step.icon;
           const isActive = currentStep === step.number;
           const isCompleted = currentStep > step.number;
           
           return (
-            <div key={index} className="flex flex-col items-center flex-1">
+            <div key={index} className="flex flex-col items-center relative z-10 flex-1">
               <div
-                className={`relative flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${
+                className={`relative flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-all duration-300 ${
                   isCompleted
                     ? "bg-green-500 text-white"
                     : isActive
-                    ? "bg-gray text-white ring-4 ring-white"
-                    : "bg-gray-600 text-gray-300"
+                    ? "bg-accent text-white ring-2 sm:ring-4 ring-accent/30"
+                    : "bg-gray-700 text-gray-400"
                 }`}
               >
                 {isCompleted ? (
-                  <MdCheckCircle size={24} />
+                  <MdCheckCircle size={20} className="sm:w-6 sm:h-6" />
                 ) : (
-                  <Icon size={24} />
-                )}
-                
-                {/* Connection line */}
-                {index < steps.length - 1 && (
-                  <div
-                    className={`absolute left-full w-full h-1 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
-                      isCompleted ? "bg-green-500" : "bg-gray-200"
-                    }`}
-                    style={{ width: "calc(100vw / 4 - 3rem)" }}
-                  />
+                  <Icon size={20} className="sm:w-6 sm:h-6" />
                 )}
               </div>
               
-              <div className="mt-2 text-center">
-                <p className={`text-xs font-medium ${
-                  isActive ? "text-white" : isCompleted ? "text-green-400" : "text-gray-400"
+              <div className="mt-2 text-center px-1">
+                <p className={`text-xs sm:text-sm font-medium ${
+                  isActive ? "text-white" : isCompleted ? "text-green-400" : "text-gray-500"
                 }`}>
                   {step.title}
                 </p>
-                <p className="text-gray-400">{step.description}</p>
               </div>
             </div>
           );
@@ -421,10 +442,10 @@ const ContactWizard = () => {
   };
 
   return (
-    <section className="bg-black text-white" id="contact-wizard">
+    <section className="section-pop-artist bg-black" id="contact-wizard">
       <Toaster position="top-center" />
-      <div className="md:container px-5 py-16 bg-black">
-        <div className="text-center mb-12 bg-transparent">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
           <h2 className="title !text-white" data-aos="fade-down">
             {Contact.title}
           </h2>
@@ -433,20 +454,20 @@ const ContactWizard = () => {
           </h4>
         </div>
 
-        <div className="max-w-4xl mx-auto bg-transparent">
+        <div className="w-full max-w-2xl lg:max-w-4xl mx-auto">
           <div className="bg-black border border-gray-800 rounded-2xl shadow-2xl overflow-hidden">
-            <div className="bg-gradient-to-r from-black to-gray-900 px-8 py-6">
+            <div className="bg-gradient-to-r from-black to-gray-900 px-4 sm:px-8 py-6">
               <ProgressIndicator />
             </div>
             
-            <form onSubmit={handleSubmit} className="p-8 bg-black">
+            <form onSubmit={handleSubmit} className="p-4 sm:p-8 bg-black">
               {renderStepContent()}
               
               <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
                 <button
                   type="button"
                   onClick={prevStep}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+                  className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-lg font-medium transition-all ${
                     currentStep === 1
                       ? "invisible"
                       : "bg-gray-700 text-gray-300 hover:bg-gray-600"
@@ -461,7 +482,7 @@ const ContactWizard = () => {
                   <button
                     type="button"
                     onClick={nextStep}
-                    className="flex items-center gap-2 px-6 py-3 bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition-all"
+                    className="flex items-center gap-2 px-4 sm:px-6 py-3 bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition-all"
                   >
                     {t.contactForm.stepContent.nextButton}
                     <MdArrowForward size={20} />
@@ -470,7 +491,7 @@ const ContactWizard = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex items-center gap-2 px-8 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-all disabled:opacity-50"
+                    className="flex items-center gap-2 px-6 sm:px-8 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-all disabled:opacity-50"
                   >
                     {isSubmitting ? t.contactForm.buttons.submitting : t.contactForm.buttons.submit}
                     {!isSubmitting && <MdArrowForward size={20} />}

@@ -9,41 +9,52 @@ const Hireme = () => {
   const { Hireme } = content;
 
   return (
-    <section className="bg-bg_light_primary">
-      <div className="md:container px-5 pt-14">
-        <h2 className="title" data-aos="fade-down">
-          {t.hireme.title}
-        </h2>
-        <h4 className="subtitle" data-aos="fade-down">
-          {t.hireme.subtitle}
-        </h4>
-        <br />
-        <div className="flex items-center md:flex-row flex-col-reverse ">
+    <section className="section-pop-artist alternate" id="hireme">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="text-center mb-12">
+          <h2 className="section-title-pop" data-aos="fade-down">
+            {t.hireme.title}
+          </h2>
+          <p className="section-subtitle-pop" data-aos="fade-down" data-aos-delay="200">
+            {t.hireme.subtitle}
+          </p>
+        </div>
+
+        {/* Content */}
+        <div className="flex flex-col-reverse md:flex-row items-center justify-center gap-8 md:gap-12">
+          {/* Image - Hidden on mobile, shown on md+ */}
           <img
             src={Hireme.image1}
-            alt="..."
+            alt="Stephanie Miranda"
             data-aos="fade-right"
-            className="max-w-sm md:block hidden"
+            className="hidden md:block w-full max-w-sm object-contain"
           />
+          
+          {/* Mobile Image */}
           <img
             src={Hireme.image2}
+            alt="Stephanie Miranda"
             data-aos="fade-up"
-            alt="..."
-            className="max-w-sm md:hidden"
+            className="md:hidden w-full max-w-xs object-contain"
           />
+
+          {/* Text Card */}
           <div
             data-aos="fade-left"
-            className="border-2 border-dark_primary max-w-sm
-           p-6 shadow-sm rounded-xl rounded-br-[8rem] sm:min-w-[22rem]"
+            className="glass-card glow-effect glow-effect-purple w-full max-w-md p-6 sm:p-8 text-center"
           >
-            <p className="leading-7">{t.hireme.para}</p>
-            <br />
-            {/* Agregar enlace con smooth scroll */}
-            <a href="#contact">
-              <button className="btn bg-dark_primary text-black">
-                {t.hireme.btnText}
-              </button>
-            </a>
+            <div className="glow-mask"></div>
+            <div className="glow-effect-content">
+              <p className="leading-relaxed text-text_secondary mb-6">
+                {t.hireme.para}
+              </p>
+              <a href="#contact" className="inline-block">
+                <button className="btn-pop-primary">
+                  {t.hireme.btnText}
+                </button>
+              </a>
+            </div>
           </div>
         </div>
       </div>

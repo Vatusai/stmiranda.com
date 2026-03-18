@@ -501,31 +501,26 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 767px) {
   .hero-name-display {
-    font-size: clamp(2rem, 10vw, 4rem);
+    font-size: clamp(1.75rem, 6vw, 2.5rem);
     text-align: center;
   }
   
-  /* Ensure all mobile content is centered */
-  * {
+  .hero-tagline {
+    font-size: clamp(0.9rem, 3.5vw, 1.1rem);
     text-align: center;
-  }
-  
-  /* Exception for form elements - keep them readable */
-  input, textarea, select {
-    text-align: left;
-  }
-  
-  /* Center all sections on mobile */
-  section {
-    text-align: center;
-    padding-left: 1rem;
-    padding-right: 1rem;
   }
   
   .section-title-pop {
-    font-size: clamp(2rem, 8vw, 3rem);
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    text-align: center;
+  }
+  
+  .section-subtitle-pop {
+    font-size: clamp(0.875rem, 3vw, 1rem);
+    padding: 0 0.5rem;
+    text-align: center;
   }
   
   .card-pop-artist,
@@ -534,10 +529,37 @@
     border-radius: 12px;
   }
   
+  .stat-item-pop {
+    padding: 1rem;
+  }
+  
   .btn-pop-primary,
   .btn-pop-secondary {
-    padding: 0.7rem 1.5rem;
-    font-size: 0.85rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  /* Form elements always left-aligned for readability */
+  input, textarea, select {
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-name-display {
+    font-size: clamp(1.5rem, 7vw, 2rem);
+    line-height: 1.3;
+  }
+  
+  .section-title-pop {
+    font-size: clamp(1.375rem, 5.5vw, 1.75rem);
+  }
+  
+  .card-pop-artist,
+  .service-card-pop {
+    padding: 1rem;
   }
 }
 

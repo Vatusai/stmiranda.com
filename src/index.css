@@ -11,18 +11,15 @@
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700;1,900&display=swap");
 
+/* Import Mobile-First Base (before Tailwind) */
+@import './styles/mobile-base.css';
+
+/* Import Pop Artist Theme (before Tailwind) */
+@import './styles/pop-artist-theme.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import Pop Artist Theme */
-@import './styles/pop-artist-theme.css';
-
-/* Import Mobile-First Optimizations */
-@import './styles/mobile-first.css';
-
-/* Import Nuclear Mobile Centering (LAST - highest priority) */
-@import './styles/mobile-force-center.css';
 
 @layer base {
   /* Custom cursor for entire website */
@@ -58,42 +55,6 @@
     width: 100%;
     overflow-x: hidden;
     box-sizing: border-box;
-  }
-  
-  /* Mobile viewport fix - prevent horizontal scrollbars */
-  @media (max-width: 767px) {
-    html, body {
-      margin: 0 !important;
-      padding: 0 !important;
-      width: 100% !important;
-      max-width: 100% !important;
-      overflow-x: hidden !important;
-      text-align: center !important;
-      box-sizing: border-box !important;
-    }
-    
-    #root {
-      width: 100% !important;
-      max-width: 100% !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      overflow-x: hidden !important;
-      text-align: center !important;
-      box-sizing: border-box !important;
-    }
-    
-    /* Main app container */
-    .bg-background,
-    .min-h-screen,
-    .pop-artist-theme {
-      width: 100% !important;
-      max-width: 100% !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      overflow-x: hidden !important;
-      text-align: center !important;
-      box-sizing: border-box !important;
-    }
   }
   h1,
   h2,

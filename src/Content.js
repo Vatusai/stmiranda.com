@@ -208,12 +208,12 @@ export const getContent = (language = 'es') => {
       {
         text: t.contact.social.email,
         icon: GrMail,
-        link: "mailto:rodrigolagunasmusic@gmail.com",
+        link: "mailto:smirandar712@gmail.com",
       },
       {
         text: t.contact.social.phone,
         icon: MdCall,
-        link: "https://wa.me/50683384214",
+        link: "https://wa.me/50672315028",
       },
       {
         text: t.contact.social.youtube,

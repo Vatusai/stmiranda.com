@@ -17,13 +17,13 @@ const Services = () => {
         <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-tertiary/5 rounded-full blur-xl"></div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-12 sm:mb-16">
-          <div className="glow-effect glow-effect-orange glass-text p-4 sm:p-6 mb-4 inline-block">
+          <div className="glow-effect glow-effect-orange glass-text p-4 sm:p-6 mb-4 inline-block w-full sm:w-auto">
             <div className="glow-mask"></div>
             <div className="glow-effect-content">
-              <h2 className="section-title-pop text-white text-2xl sm:text-3xl md:text-4xl" data-aos="fade-down">
+              <h2 className="section-title-pop text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl" data-aos="fade-down">
                 {services.title}
               </h2>
             </div>

@@ -53,7 +53,7 @@ const LogoAnimation = () => {
           <Contact />
           <footer className="p-3 text-center">
             <h6 className="mb-3">STEPHANIE MIRANDA</h6>
-            <p> © All CopyRights Reserved 2025</p>
+            <p> © All CopyRights Reserved 2026</p>
           </footer>
         </div>
       )}

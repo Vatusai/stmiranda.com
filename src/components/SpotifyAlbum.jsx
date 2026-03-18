@@ -2,7 +2,7 @@ import React from 'react';
 
 const SpotifyAlbum = () => {
   return (
-    <section className="section-pop-artist py-16 sm:py-20" id="spotify">
+    <section className="section-pop-artist relative" id="spotify">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-accent/5 rounded-full blur-xl"></div>
@@ -10,18 +10,18 @@ const SpotifyAlbum = () => {
         <div className="absolute top-1/2 right-1/3 w-24 h-24 bg-tertiary/5 rounded-full blur-xl"></div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-12 sm:mb-16">
-          <div className="glow-effect glow-effect-green glass-text p-4 sm:p-6 mb-4 inline-block">
+        <div className="text-center mb-10 sm:mb-16">
+          <div className="glow-effect glow-effect-green glass-text p-4 sm:p-6 mb-4 inline-block w-full sm:w-auto">
             <div className="glow-mask"></div>
             <div className="glow-effect-content">
-              <h2 className="section-title-pop text-white text-2xl sm:text-3xl md:text-4xl" data-aos="fade-down">
+              <h2 className="section-title-pop text-white text-xl sm:text-2xl md:text-3xl" data-aos="fade-down">
                 Listen to My Music
               </h2>
             </div>
           </div>
-          <div className="glow-effect glow-effect-teal glass-text p-3 sm:p-4 inline-block">
+          <div className="glow-effect glow-effect-teal glass-text p-3 sm:p-4 inline-block w-full sm:w-auto">
             <div className="glow-mask"></div>
             <div className="glow-effect-content">
               <p className="text-white text-sm sm:text-base" data-aos="fade-up" data-aos-delay="200">

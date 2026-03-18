@@ -14,18 +14,19 @@ const customStyles = {
     bottom: "auto",
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
-    maxWidth: "28rem",
     width: "90%",
+    maxWidth: "400px",
+    maxHeight: "90vh",
+    overflow: "auto",
     background: "linear-gradient(135deg, #1A1A2E 0%, #16213E 100%)",
     border: "1px solid rgba(139, 92, 246, 0.3)",
-    borderRadius: "20px",
-    padding: "2rem",
+    borderRadius: "16px",
+    padding: "1.5rem",
     color: "#FFFFFF",
   },
   overlay: {
-    padding: "2rem",
-    backgroundColor: "rgba(15, 15, 35, 0.8)",
-    backdropFilter: "blur(10px)",
+    backgroundColor: "rgba(15, 15, 35, 0.85)",
+    backdropFilter: "blur(8px)",
   },
 };
 Modal.setAppElement("#root");
@@ -90,13 +91,13 @@ const Skills = () => {
       </Modal>
 
       {/* Main Content */}
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <div className="glow-effect glow-effect-purple glass-text p-6 mb-4 inline-block">
+        <div className="text-center mb-12 sm:mb-16">
+          <div className="glow-effect glow-effect-purple glass-text p-4 sm:p-6 mb-4 inline-block w-full sm:w-auto">
             <div className="glow-mask"></div>
             <div className="glow-effect-content">
-              <h2 className="section-title-pop text-white" data-aos="fade-down">
+              <h2 className="section-title-pop text-white text-xl sm:text-2xl md:text-3xl" data-aos="fade-down">
                 {skills.title}
               </h2>
             </div>
@@ -104,7 +105,7 @@ const Skills = () => {
         </div>
 
         {/* Skills Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
           {skills.skills_content.map((skill, i) => (
             <div
               key={i}
