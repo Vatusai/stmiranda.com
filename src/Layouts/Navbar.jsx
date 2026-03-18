@@ -84,7 +84,7 @@ const Navbar = () => {
                 isScrolled ? "text-text_primary" : "text-text_primary"
               } hover:scale-105 hover:text-accent hover:drop-shadow-lg`}
             >
-              Rodrigo Lagunas
+              Stephanie Miranda
             </button>
           </div>
 

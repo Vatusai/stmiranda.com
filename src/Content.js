@@ -169,13 +169,13 @@ export const getContent = (language = 'es') => {
     testimonials_content: [
       {
         review:
-          "\"Mis respetos y admiración para Rodrigo, sus músicos y cantantes. Un orgullo nacional. Gracias\"",
+          "\"Mis respetos y admiración para Stephanie, sus músicos y cantantes. Un orgullo nacional. Gracias\"",
         img: avatar1,
         name: "anacemonge2211 - Instagram",
       },
       {
         review:
-          "\"Excelente Rodrigo!!!!!! El trabajo que realizas es increíble como te lo dije en el Jazz Café!!! Que Dios te siga bendiciendo!!\"",
+          "\"Excelente Stephanie!!!!!! El trabajo que realizas es increíble como te lo dije en el Jazz Café!!! Que Dios te siga bendiciendo!!\"",
         img: avatar2,
         name: "marienf - INSTAGRAM",
       },

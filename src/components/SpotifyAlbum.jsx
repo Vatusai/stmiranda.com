@@ -55,15 +55,15 @@ const SpotifyAlbum = () => {
 
                 {/* Spotify Embed */}
                 <div className="spotify-embed-container relative rounded-xl overflow-hidden">
-                  <iframe 
-                    src="https://open.spotify.com/embed/album/1TJWfdw3AFvQmTFxPQXvwl?utm_source=generator&theme=0" 
-                    width="100%" 
-                    height="352" 
-                    frameBorder="0" 
-                    allowfullscreen="" 
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                  <iframe
+                    src="https://open.spotify.com/embed/artist/4c952oiCTaIBNwAbM5T300?utm_source=generator&theme=0"
+                    width="100%"
+                    height="352"
+                    frameBorder="0"
+                    allowfullscreen=""
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                     loading="lazy"
-                    title="Spotify Album Player"
+                    title="Spotify Artist Player"
                     className="rounded-xl"
                   ></iframe>
                   
@@ -74,7 +74,7 @@ const SpotifyAlbum = () => {
                 {/* Call to action */}
                 <div className="text-center mt-6">
                   <a 
-                    href="https://open.spotify.com/album/1TJWfdw3AFvQmTFxPQXvwl" 
+                    href="https://open.spotify.com/intl-es/artist/4c952oiCTaIBNwAbM5T300"
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 btn-pop-primary glass hover:scale-105 transition-all duration-300"

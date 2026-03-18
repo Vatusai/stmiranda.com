@@ -77,7 +77,7 @@ const Hero = () => {
               {/* Better image scaling for desktop */}
               <img
                 src={hero.image}
-                alt="Rodrigo Lagunas - Professional Musician"
+                alt="Stephanie Miranda - Professional Musician"
                 className="relative w-full h-auto object-contain rounded-xl sm:rounded-2xl transform scale-105 sm:scale-110 lg:scale-115 xl:scale-120"
               />
               

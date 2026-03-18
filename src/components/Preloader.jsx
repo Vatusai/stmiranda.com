@@ -100,7 +100,7 @@ const Preloader = () => {
       {/* Text Animation Musical Preloader */}
       <div className="text-animation-container">
         <h2 className="preloader-title">
-          Rodrigo Lagunas creates
+          Stephanie Miranda creates
           <div className="text-mask">
             <span data-show>magical experiences.</span>
             <span>unforgettable celebrations.</span>
@@ -111,7 +111,7 @@ const Preloader = () => {
         
         {/* Artist signature */}
         <div className="artist-signature">
-          <p>— Rodrigo Lagunas, Professional Musician and Producer</p>
+          <p>— Stephanie Miranda, Professional Musician and Producer</p>
         </div>
         
         {/* Skip button with glassmorphism */}

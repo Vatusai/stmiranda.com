@@ -9,7 +9,7 @@ export const translations = {
       contact: "Contacto"
     },
     hero: {
-      title: "Rodrigo Lagunas",
+      title: "Stephanie Miranda",
       firstName: "RODRIGO",
       lastName: "LAGUNAS",
       btnText: "Solicitar Cotización Gratis",
@@ -206,7 +206,7 @@ export const translations = {
       contact: "Contact"
     },
     hero: {
-      title: "Rodrigo Lagunas",
+      title: "Stephanie Miranda",
       firstName: "RODRIGO",
       lastName: "LAGUNAS", 
       btnText: "Request Free Quote",

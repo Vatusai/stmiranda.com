@@ -3,7 +3,7 @@ VPS DEPLOYMENT INSTRUCTIONS FOR RODRIGO LAGUNAS WEBSITE
 Ubuntu Server - /home/ubuntu directory
 ==============================================================================
 
-This guide will help Claude AI deploy the Rodrigo Lagunas musician website 
+This guide will help Claude AI deploy the Stephanie Miranda musician website 
 on an Ubuntu VPS server with /home/ubuntu as the root directory.
 
 PREREQUISITES:
@@ -149,7 +149,7 @@ nano /home/ubuntu/deploy.sh
 # Add the following content:
 # --------------------------------------------------------------------------
 #!/bin/bash
-echo "Deploying Rodrigo Lagunas Website..."
+echo "Deploying Stephanie Miranda Website..."
 
 # Navigate to project directory
 cd /home/ubuntu/website-rodri

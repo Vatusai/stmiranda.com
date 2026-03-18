@@ -49,7 +49,7 @@ const Projects = () => {
               <div className="relative bg-cardGradient rounded-3xl p-6 border border-accent/20">
                 <img
                   src={Projects.image}
-                  alt="Rodrigo Lagunas Performance"
+                  alt="Stephanie Miranda Performance"
                   className="w-full h-auto object-cover rounded-2xl"
                 />
                 
