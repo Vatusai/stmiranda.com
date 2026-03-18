@@ -2,6 +2,36 @@ import { useState, useEffect } from "react";
 import { content } from "../Content";
 import { useLanguage } from "../contexts/LanguageContext";
 import { translations } from "../translations/translations";
+import Modal from "react-modal";
+import { BsWhatsapp, BsInstagram, BsYoutube } from "react-icons/bs";
+import { MdEmail, MdCall } from "react-icons/md";
+
+const contactModalStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    width: "90%",
+    maxWidth: "420px",
+    maxHeight: "90vh",
+    overflow: "auto",
+    background: "linear-gradient(135deg, #1A1A2E 0%, #16213E 100%)",
+    border: "1px solid rgba(139, 92, 246, 0.3)",
+    borderRadius: "16px",
+    padding: "1.5rem",
+    color: "#FFFFFF",
+  },
+  overlay: {
+    backgroundColor: "rgba(15, 15, 35, 0.85)",
+    backdropFilter: "blur(8px)",
+    zIndex: 9999,
+  },
+};
+
+Modal.setAppElement("#root");
 
 const Navbar = () => {
   const { nav } = content;
@@ -10,6 +40,50 @@ const Navbar = () => {
   const [activeSection, setActiveSection] = useState("home");
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
+
+  const contactLinks = [
+    {
+      icon: BsWhatsapp,
+      label: "WhatsApp",
+      href: "https://wa.me/50672315028",
+      color: "text-green-400",
+      bg: "bg-green-500/10 hover:bg-green-500/20",
+      border: "border-green-500/30",
+    },
+    {
+      icon: MdEmail,
+      label: "smirandar712@gmail.com",
+      href: "mailto:smirandar712@gmail.com",
+      color: "text-blue-400",
+      bg: "bg-blue-500/10 hover:bg-blue-500/20",
+      border: "border-blue-500/30",
+    },
+    {
+      icon: MdCall,
+      label: "+506 7231 5028",
+      href: "tel:+50672315028",
+      color: "text-yellow-400",
+      bg: "bg-yellow-500/10 hover:bg-yellow-500/20",
+      border: "border-yellow-500/30",
+    },
+    {
+      icon: BsInstagram,
+      label: "@stephaniemirandamusic",
+      href: "https://www.instagram.com/stephaniemirandamusic/",
+      color: "text-pink-400",
+      bg: "bg-pink-500/10 hover:bg-pink-500/20",
+      border: "border-pink-500/30",
+    },
+    {
+      icon: BsYoutube,
+      label: "YouTube",
+      href: "https://www.youtube.com/@stephaniemirandamusic",
+      color: "text-red-400",
+      bg: "bg-red-500/10 hover:bg-red-500/20",
+      border: "border-red-500/30",
+    },
+  ];
 
   // Handle scroll effects
   useEffect(() => {
@@ -36,18 +110,19 @@ const Navbar = () => {
 
   // Smooth scroll to section or handle external link
   const handleNavigation = (item) => {
+    const sectionId = item.link.replace("#", "");
+    if (sectionId === "contact") {
+      setContactModalOpen(true);
+      setIsMobileMenuOpen(false);
+      return;
+    }
     if (item.external && item.url) {
-      // Open external link in new tab
       window.open(item.url, '_blank', 'noopener,noreferrer');
     } else {
-      // Handle internal navigation
-      const element = document.getElementById(item.link.replace("#", ""));
+      const element = document.getElementById(sectionId);
       if (element) {
-        const offsetTop = element.offsetTop - 80; // Account for navbar height
-        window.scrollTo({
-          top: offsetTop,
-          behavior: "smooth",
-        });
+        const offsetTop = element.offsetTop - 80;
+        window.scrollTo({ top: offsetTop, behavior: "smooth" });
       }
     }
     setIsMobileMenuOpen(false);
@@ -66,6 +141,55 @@ const Navbar = () => {
   };
 
   return (
+    <>
+    <Modal
+      isOpen={contactModalOpen}
+      onRequestClose={() => setContactModalOpen(false)}
+      style={contactModalStyles}
+    >
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-xl font-bold text-white">
+          {language === "es" ? "Contacto" : "Contact"}
+        </h3>
+        <button
+          onClick={() => setContactModalOpen(false)}
+          className="text-text_secondary hover:text-white transition-colors duration-200 text-2xl leading-none"
+        >
+          ×
+        </button>
+      </div>
+
+      <div className="space-y-3 mb-6">
+        {contactLinks.map((link, i) => {
+          const Icon = link.icon;
+          return (
+            <a
+              key={i}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setContactModalOpen(false)}
+              className={`flex items-center gap-4 w-full px-4 py-3 rounded-xl border ${link.bg} ${link.border} transition-all duration-300 group`}
+            >
+              <Icon className={`${link.color} text-xl flex-shrink-0`} />
+              <span className={`${link.color} text-sm font-medium group-hover:opacity-90`}>
+                {link.label}
+              </span>
+            </a>
+          );
+        })}
+      </div>
+
+      <div className="flex justify-end">
+        <button
+          onClick={() => setContactModalOpen(false)}
+          className="btn-pop-secondary"
+        >
+          {language === "es" ? "Cerrar" : "Close"}
+        </button>
+      </div>
+    </Modal>
+
     <nav
       className={`fixed top-0 left-0 w-full z-50 navbar-pop-artist transition-all duration-300 ${
         isScrolled
@@ -276,6 +400,7 @@ const Navbar = () => {
         </div>
       </div>
     </nav>
+    </>
   );
 };
 
