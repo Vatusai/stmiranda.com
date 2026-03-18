@@ -50,13 +50,7 @@ export const getContent = (language = 'es') => {
       link: "#skills",
       icon: BiUser,
     },
-    {
-      link: "bio",
-      icon: BsInfoCircle,
-      external: true,
-      url: "https://naceunaestrellacr.fandom.com/es/wiki/Rodrigo_Lagunas",
-    },
-    {
+{
       link: "#services",
       icon: RiServiceLine,
     },
@@ -218,17 +212,17 @@ export const getContent = (language = 'es') => {
       {
         text: t.contact.social.youtube,
         icon: BsYoutube,
-        link: "https://www.youtube.com/@rodrigolagunasmusico9689",
+        link: "https://www.youtube.com/@stephaniemirandamusic",
       },
       {
         text: t.contact.social.instagram,
         icon: BsInstagram,
-        link: "https://www.instagram.com/RodrigoLagunasMusic",
+        link: "https://www.instagram.com/stephaniemirandamusic/",
       },
       {
         text: t.contact.social.facebook,
         icon: BsFacebook,
-        link: "https://www.facebook.com/RodrigoLagunasMusic",
+        link: "https://www.instagram.com/stephaniemirandamusic/",
       },
     ],
   },

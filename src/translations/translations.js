@@ -113,7 +113,7 @@ export const translations = {
         email: "smirandar712@gmail.com",
         phone: "+506 7231 5028",
         youtube: "YouTube Channel",
-        instagram: "RodrigoLagunasMusic", 
+        instagram: "stephaniemirandamusic", 
         facebook: "Facebook Page"
       }
     },
@@ -310,7 +310,7 @@ export const translations = {
         email: "smirandar712@gmail.com",
         phone: "+506 7231 5028", 
         youtube: "YouTube Channel",
-        instagram: "RodrigoLagunasMusic",
+        instagram: "stephaniemirandamusic",
         facebook: "Facebook Page"
       }
     },
