@@ -1,49 +1,227 @@
-# React Js Portfolio Website
+# 🎼 Stephanie Miranda - Sistema Web Completo (V2)
 
-![MacBook Air - 2 (3)](https://user-images.githubusercontent.com/75136330/203812467-8b00176d-9d31-4c09-86c0-8b82b8c661eb.png)
-![127 0 0 1_5173_ (1)](https://user-images.githubusercontent.com/75136330/203812531-baeb4957-5c7d-4222-a07a-2805b278bdbf.png)
+Sistema web integral que combina **sitio público** para clientes y **panel administrativo** profesional.
 
-## Available Scripts
+## 🆕 Novedades V2 - Arquitectura Separada
 
-In the project directory, you can run:
+La V2 introduce una separación clara entre:
+- **Contactos** (Community Layer): Fans, seguidores, comunidad
+- **Cotizaciones** (Pipeline Comercial): Solicitudes de eventos privados
+- **Eventos** (Confirmados): Eventos contratados
 
-### `npm install`
+### ✨ Nuevas Funcionalidades
 
-### `npm run dev`
+1. **🎵 Registro de Fans** - Formulario público separado de cotizaciones
+2. **📧 Email Marketing** - Newsletters a fans + follow-ups automáticos
+3. **📊 Estadísticas Separadas** - Métricas de comunidad vs pipeline
+4. **📥 Exportación** - Listas segmentadas por tipo de relación
 
-<br />
+Ver [MIGRATION_V2.md](./MIGRATION_V2.md) para detalles completos.
 
-> Youtube Channel -
-> Subscribe [Code A Program](https://www.youtube.com/@CodeAProgram) Channel
+![Vista previa](./project-screenshot.png)
 
-> Video Link -
-> [Watch Now](https://www.youtube.com/watch?v=YpFK4hUZ-NM)
+## ✨ Características
 
-> Go To [Live Preview](https://codeaprogram-portfolio.web.app/)
+### 🌐 Sitio Público
+- Landing page con diseño artístico y premium
+- Galería de servicios y proyectos
+- Formulario de contacto funcional
+- Integración con redes sociales
+- Animaciones y efectos visuales
 
-> Startup [repository link](https://github.com/Sridhar-C-25/React_portfolio_2_startup)
+### 🔐 Panel Administrativo
+- **Dashboard** con métricas en tiempo real
+- **Calendario** de eventos con vista mensual
+- **CRM** de clientes (crear, editar, eliminar)
+- **Estadísticas** de visitas e ingresos
+- **Configuración** de perfil y notificaciones
 
-## You Learn
+## 🚀 Inicio rápido
 
-- react js hooks
-- folder structure
-- tailwind css
-- swiper js
-- react icons
-- react js packages (ex:react-modal)
-- email js
-- aos scroll animation
-- and more....
+### 1. Instalar dependencias
+```bash
+# Instalar dependencias del frontend
+npm install
+
+# Instalar dependencias del backend
+cd backend && npm install
+```
+
+### 2. Inicializar base de datos
+```bash
+npm run init-db
+```
+
+### 3. Iniciar sistema completo
+```bash
+npm run dev
+```
+
+Esto inicia:
+- **Frontend:** http://localhost:5173
+- **Backend API:** http://localhost:3001
+
+### Credenciales de acceso
+- **Email:** `stephanie@stmiranda.com`
+- **Password:** `admin123`
+
+## 📁 Estructura del proyecto
+
+```
+stmiranda-website/
+├── src/                          # Frontend React
+│   ├── admin/                   # Panel de administración
+│   │   ├── pages/              # Dashboard, Calendar, Clients, etc.
+│   │   ├── components/         # Componentes admin
+│   │   └── layouts/            # Layouts del admin
+│   │
+│   ├── components/              # Componentes del sitio público
+│   │   ├── Hero.jsx
+│   │   ├── Services.jsx
+│   │   ├── Projects.jsx
+│   │   └── ...
+│   │
+│   ├── services/               # Cliente API
+│   │   └── api.js             # Conexión con backend
+│   │
+│   ├── contexts/               # Contextos React
+│   │   └── AuthContext.jsx    # Autenticación
+│   │
+│   └── router/                 # Enrutamiento
+│       └── AppRouter.jsx
+│
+├── backend/                     # Backend Node.js
+│   ├── src/
+│   │   ├── routes/            # Rutas API
+│   │   │   ├── auth.js       # Login/logout
+│   │   │   ├── clients.js    # CRUD clientes
+│   │   │   ├── events.js     # CRUD eventos
+│   │   │   └── stats.js      # Estadísticas
+│   │   │
+│   │   ├── utils/             # Utilidades
+│   │   │   ├── database.js   # Conexión SQLite
+│   │   │   └── initDb.js     # Inicialización DB
+│   │   │
+│   │   └── server.js          # Servidor Express
+│   │
+│   └── database/               # Base de datos SQLite
+│       └── app.db
+│
+└── package.json               # Scripts y dependencias
+```
+
+## 🛠️ Stack tecnológico
+
+### Frontend
+- **React 18** - Framework UI
+- **React Router 6** - Enrutamiento
+- **Tailwind CSS** - Estilos
+- **Lucide React** - Iconos
+
+### Backend
+- **Node.js** + **Express** - API REST
+- **SQLite** - Base de datos (desarrollo)
+- **Better-sqlite3** - Driver SQLite
+- **JWT** - Autenticación
+- **Bcryptjs** - Hash de contraseñas
+
+## 📊 API Endpoints
+
+### Autenticación
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/api/auth/login` | Iniciar sesión |
+| POST | `/api/auth/logout` | Cerrar sesión |
+| GET | `/api/auth/me` | Obtener usuario actual |
+
+### Clientes
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/api/clients` | Listar clientes |
+| GET | `/api/clients/:id` | Ver cliente |
+| POST | `/api/clients` | Crear cliente |
+| PUT | `/api/clients/:id` | Actualizar cliente |
+| DELETE | `/api/clients/:id` | Eliminar cliente |
+
+### Eventos
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/api/events` | Listar eventos |
+| POST | `/api/events` | Crear evento |
+| PUT | `/api/events/:id` | Actualizar evento |
+| DELETE | `/api/events/:id` | Eliminar evento |
+
+### Estadísticas
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/api/stats/overview` | Resumen general |
+| GET | `/api/stats/revenue-by-month` | Ingresos mensuales |
+| GET | `/api/stats/upcoming-events` | Próximos eventos |
+
+## 📝 Comandos disponibles
+
+```bash
+# Desarrollo completo (frontend + backend)
+npm run dev
+
+# Solo frontend
+npm run client
+
+# Solo backend
+npm run server
+
+# Inicializar base de datos
+npm run init-db
+
+# Resetear base de datos (⚠️ borra todo)
+npm run reset-db
+
+# Build para producción
+npm run build
+```
+
+## 🔒 Seguridad
+
+- Autenticación con JWT en cookies HTTP-only
+- Contraseñas hasheadas con bcrypt
+- CORS configurado para el dominio del frontend
+- Validación de datos con express-validator
+
+## 🚀 Deploy a producción
+
+### 1. Preparar para producción
+```bash
+# Cambiar JWT_SECRET en backend/.env
+JWT_SECRET=tu-clave-segura-muy-larga-y-aleatoria
+
+# Cambiar a PostgreSQL (opcional)
+# Editar backend/src/utils/database.js
+```
+
+### 2. Build del frontend
+```bash
+npm run build
+```
+
+### 3. Iniciar en producción
+```bash
+cd backend
+NODE_ENV=production npm start
+```
+
+## 📋 Roadmap futuro
+
+- [ ] Integración Google Calendar
+- [ ] Notificaciones por email (SendGrid)
+- [ ] WhatsApp Business API
+- [ ] Exportar a Excel/PDF
+- [ ] Sistema de cotizaciones
+- [ ] Facturación integrada
+
+## 📄 Licencia
+
+Proyecto privado - Stephanie Miranda Music
 
 ---
 
-# packages:
-+ tailwind css - https://tailwindcss.com/docs/installation
-+ vite js - https://vitejs.dev/guide/
-+ swiper js - https://swiperjs.com/get-started
-+ email js - https://www.emailjs.com/docs/
-+ Aos (animation) - https://michalsnik.github.io/aos/
-+ react modal - https://www.npmjs.com/package/react-modal
-+ react-hot-toast - https://react-hot-toast.com/docs
-+ react icons - https://react-icons.github.io/react-icons/
-
+**Desarrollado con ❤️ para Stephanie Miranda**

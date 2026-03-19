@@ -2,6 +2,7 @@
 import { getContent } from "../Content";
 import { useLanguage } from "../contexts/LanguageContext";
 import { translations } from "../translations/translations";
+import { MdOutlineRequestQuote } from "react-icons/md";
 
 const Hero = () => {
   const { language } = useLanguage();
@@ -42,6 +43,32 @@ const Hero = () => {
                   {t.hero.tagline}
                 </p>
               </div>
+            </div>
+
+            {/* CTA Button - Cotizar */}
+            <div className="mb-8 sm:mb-10" data-aos="fade-up" data-aos-delay="300">
+              <a
+                href="#contact-wizard"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('contact-wizard')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                  });
+                }}
+                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-bold text-lg rounded-full shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-105 active:scale-95 transition-all duration-300 ease-out group"
+              >
+                <MdOutlineRequestQuote size={24} className="group-hover:rotate-12 transition-transform duration-300" />
+                <span>Cotizar</span>
+                <svg 
+                  className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform duration-300" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </a>
             </div>
 
             {/* Stats Grid - Modern Music Industry Focus */}

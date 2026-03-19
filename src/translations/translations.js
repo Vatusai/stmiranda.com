@@ -143,12 +143,13 @@ export const translations = {
       },
       options: {
         services: [
-          "Rodrigo como Cantante-Guitarrista",
-          "Rodrigo + 1 músico más (dúo)",
-          "Rodrigo + 2 músicos más (trío)",
-          "Rodrigo + 3 músicos más (cuarteto)",
-          "Rodrigo + 4 músicos más (quinteto)",
-          "Solo quiero cotizar por ahora"
+          "Stephanie Cantante Solista",
+          "Stephanie + Pianista",
+          "Stephanie + Guitarrista",
+          "Stephanie + Violinista",
+          "Stephanie + Violinista + Pianista",
+          "Stephanie + Violinista + Guitarrista",
+          "Otro / Personalizado"
         ],
         duration: ["1H", "2H", "3H", "1H o 2H", "Lo indicaré en Requerimientos. Aún no estoy seguro/a"]
       },
@@ -340,12 +341,13 @@ export const translations = {
       },
       options: {
         services: [
-          "Rodrigo as Singer-Guitarist",
-          "Rodrigo + 1 more musician (duo)",
-          "Rodrigo + 2 more musicians (trio)",
-          "Rodrigo + 3 more musicians (quartet)",
-          "Rodrigo + 4 more musicians (quintet)",
-          "I just want a quote for now"
+          "Stephanie Solo Singer",
+          "Stephanie + Pianist",
+          "Stephanie + Guitarist",
+          "Stephanie + Violinist",
+          "Stephanie + Violinist + Pianist",
+          "Stephanie + Violinist + Guitarist",
+          "Other / Custom"
         ],
         duration: ["1H", "2H", "3H", "1H or 2H", "I will specify in Requirements. I'm not sure yet"]
       },

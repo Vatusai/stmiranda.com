@@ -54,6 +54,7 @@ const ContactWizard = () => {
     EMAIL: "",
     MMERGE2: "",
     MMERGE5: "",
+    service_custom_description: "",
     MMERGE7: "",
     MMERGE8: "",
     MMERGE9: "",
@@ -89,15 +90,15 @@ const ContactWizard = () => {
 
     try {
       await axios.post(
-        "https://api.fabianorozco.com/generate-document", 
-        formData, 
+        "/api/quotation",
+        formData,
         {
           headers: {
             "Content-Type": "application/json"
           }
         }
       );
-      
+
       toast.success("¡Solicitud enviada! Te contactaremos pronto.");
       
       // Reset form
@@ -105,6 +106,7 @@ const ContactWizard = () => {
         EMAIL: "",
         MMERGE2: "",
         MMERGE5: "",
+        service_custom_description: "",
         MMERGE7: "",
         MMERGE8: "",
         MMERGE9: "",
@@ -347,7 +349,24 @@ const ContactWizard = () => {
                   ))}
                 </div>
               </div>
-              
+
+              {(formData.MMERGE5 === "Otro / Personalizado" || formData.MMERGE5 === "Other / Custom") && (
+                <div>
+                  <label htmlFor="service_custom_description" className="block text-sm font-medium text-gray-200 mb-2">
+                    {language === 'es' ? 'Describe la formación musical que deseas' : 'Describe your desired musical format'}
+                  </label>
+                  <input
+                    type="text"
+                    name="service_custom_description"
+                    id="service_custom_description"
+                    value={formData.service_custom_description}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-600 focus:ring-2 focus:ring-dark_primary focus:border-transparent text-white bg-gray-900 text-base"
+                    placeholder={language === 'es' ? 'Ej: Stephanie + Trompetista + Baterista' : 'E.g. Stephanie + Trumpeter + Drummer'}
+                  />
+                </div>
+              )}
+
               <div>
                 <label htmlFor="MMERGE9" className="block text-sm font-medium text-gray-200 mb-2">
                   {t.contactForm.stepContent.labels.eventDuration}

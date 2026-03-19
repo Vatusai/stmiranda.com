@@ -5,6 +5,7 @@ import { translations } from "../translations/translations";
 import Modal from "react-modal";
 import { BsWhatsapp, BsInstagram, BsYoutube } from "react-icons/bs";
 import { MdEmail, MdCall } from "react-icons/md";
+import AdminAccess from "../components/admin-access/AdminAccess";
 
 const contactModalStyles = {
   content: {
@@ -212,8 +213,9 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Language Toggle Button */}
+          {/* Language Toggle Button and Admin Access */}
           <div className="hidden md:flex items-center space-x-4">
+            <AdminAccess variant="icon" />
             <button
               onClick={toggleLanguage}
               className="flex items-center px-3 py-2 rounded-full text-sm font-500 transition-all duration-300 transform hover:scale-105 glass-text hover:bg-accent/10 hover:shadow-lg hover:shadow-accent/10 text-text_secondary hover:text-accent border border-accent/20 hover:border-accent/40"
@@ -287,6 +289,7 @@ const Navbar = () => {
 
           {/* Mobile Language Toggle and Menu Button */}
           <div className="md:hidden flex items-center space-x-2">
+            <AdminAccess variant="icon" />
             <button
               onClick={toggleLanguage}
               className="flex items-center px-2 py-1 rounded-full text-xs font-500 transition-all duration-300 transform hover:scale-105 glass-text hover:bg-accent/10 text-text_secondary hover:text-accent border border-accent/20"

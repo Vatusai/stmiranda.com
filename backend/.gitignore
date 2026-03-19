@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Environment variables — NEVER commit real secrets
+.env
+.env.local
+.env.production
+
+# Database files — VPS has its own persistent DB
+database/*.db
+database/*.sqlite
+database.sqlite
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.DS_Store
+.vscode/
+*.swp
+
+# Google service account key (contains private credentials)
+config/service-account-key.json

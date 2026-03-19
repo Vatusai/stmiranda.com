@@ -46,14 +46,9 @@ const Hireme = () => {
           >
             <div className="glow-mask"></div>
             <div className="glow-effect-content">
-              <p className="leading-relaxed text-text_secondary mb-6">
+              <p className="leading-relaxed text-text_secondary">
                 {t.hireme.para}
               </p>
-              <a href="#contact" className="inline-block">
-                <button className="btn-pop-primary">
-                  {t.hireme.btnText}
-                </button>
-              </a>
             </div>
           </div>
         </div>
