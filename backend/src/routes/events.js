@@ -24,9 +24,9 @@ router.get('/public', async (req, res) => {
     // Get upcoming public events
     const events = db.prepare(`
       SELECT * FROM events 
-      WHERE visibility = 'publico' 
+      WHERE visibility = 'publico'
       AND date >= date('now')
-      AND status = 'confirmed'
+      AND status != 'cancelled'
       ORDER BY date ASC 
       LIMIT ?
     `).all(parseInt(limit));

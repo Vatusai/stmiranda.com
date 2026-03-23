@@ -693,7 +693,7 @@ const EventForm = ({ event, setEvent, onSubmit, isEdit }) => {
               name="visibility"
               value="publico"
               checked={event.visibility === 'publico'}
-              onChange={(e) => setEvent({...event, visibility: e.target.value})}
+              onChange={(e) => setEvent({...event, visibility: e.target.value, status: 'confirmed'})}
               className="text-violet-500"
             />
             <span className="text-sm text-gray-300">Público (Mostrar en web)</span>
