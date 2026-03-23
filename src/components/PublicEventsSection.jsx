@@ -137,32 +137,36 @@ const PublicEventsSection = () => {
     }
   };
 
+  // Parse YYYY-MM-DD strings in local time (not UTC) to prevent day shift
+  const parseLocal = (dateStr) => {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  };
+
   const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
     return new Intl.DateTimeFormat(language === 'es' ? 'es-ES' : 'en-US', {
       day: 'numeric',
       month: 'short',
-    }).format(date);
+    }).format(parseLocal(dateStr));
   };
 
   const formatFullDate = (dateStr) => {
-    const date = new Date(dateStr);
     return new Intl.DateTimeFormat(language === 'es' ? 'es-ES' : 'en-US', {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
       year: 'numeric',
-    }).format(date);
+    }).format(parseLocal(dateStr));
   };
 
   const getDayNumber = (dateStr) => {
-    return new Date(dateStr).getDate();
+    return parseLocal(dateStr).getDate();
   };
 
   const getMonthShort = (dateStr) => {
     return new Intl.DateTimeFormat(language === 'es' ? 'es-ES' : 'en-US', {
       month: 'short',
-    }).format(new Date(dateStr)).toUpperCase();
+    }).format(parseLocal(dateStr)).toUpperCase();
   };
 
   const scrollToEvent = (index) => {

@@ -392,7 +392,7 @@ const Calendar = () => {
               </div>
             ) : (
               monthEvents
-                .sort((a, b) => new Date(a.date) - new Date(b.date))
+                .sort((a, b) => a.date.localeCompare(b.date))
                 .map((event) => (
                   <div 
                     key={event.id}
