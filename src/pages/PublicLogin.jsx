@@ -1,7 +1,6 @@
 /**
  * AttendeeAccess
  * Lightweight "Confirmar asistencia" page — no password required.
- * Replaces the old login/register flow for public event attendees.
  */
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
@@ -9,16 +8,17 @@ import { useAuth } from '../contexts/AuthContext';
 import { User, Phone, Mail, Music, ArrowLeft, Calendar, Sparkles, CheckCircle } from 'lucide-react';
 
 const PublicLogin = () => {
-  const { isAuthenticated, isLoading: authLoading, checkAuth } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, user, checkAuth } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Resolve eventId from URL or from a pending action saved before redirect
+  // Resolve eventId from URL or saved pending action
   const eventIdFromUrl = searchParams.get('eventId');
-  const pendingRaw = localStorage.getItem('pendingEventAction');
   const pendingEventId = (() => {
-    try { return pendingRaw ? JSON.parse(pendingRaw)?.eventId : null; }
-    catch { return null; }
+    try {
+      const raw = localStorage.getItem('pendingEventAction');
+      return raw ? JSON.parse(raw)?.eventId : null;
+    } catch { return null; }
   })();
   const eventId = eventIdFromUrl || pendingEventId;
 
@@ -28,19 +28,20 @@ const PublicLogin = () => {
   const [isLoading, setIsLoading]     = useState(false);
   const [done, setDone] = useState(false);
 
-  // ── If the user already has a valid session, skip the form ──────────────
+  // Pre-fill form when a fan session already exists (so they just hit Confirmar)
+  // Admins see a blank form — they can test the flow without being redirected away
   useEffect(() => {
     if (authLoading) return;
-    if (isAuthenticated) {
-      if (eventId) {
-        registerAndRedirect(eventId);
-      } else {
-        navigate('/');
-      }
+    if (isAuthenticated && user?.role === 'fan') {
+      setFormData({
+        name:  user.name  || '',
+        email: user.email || '',
+        phone: user.phone || '',
+      });
     }
-  }, [isAuthenticated, authLoading]); // eslint-disable-line
+  }, [authLoading, isAuthenticated, user]);
 
-  // ── Validation ───────────────────────────────────────────────────────────
+  // ── Validation ────────────────────────────────────────────────────────────
   const validate = () => {
     const e = {};
     if (!formData.name.trim())
@@ -55,20 +56,7 @@ const PublicLogin = () => {
     return Object.keys(e).length === 0;
   };
 
-  // ── After login, register for event if present ───────────────────────────
-  const registerAndRedirect = async (eid) => {
-    try {
-      await fetch(`/api/events/${eid}/register`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-      });
-    } catch { /* non-blocking */ }
-    localStorage.removeItem('pendingEventAction');
-    navigate(`/?registered=${eid}`);
-  };
-
-  // ── Form submit ──────────────────────────────────────────────────────────
+  // ── Submit ────────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -92,15 +80,12 @@ const PublicLogin = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        const msg = data.errors?.[0]?.msg || data.error || 'Error del servidor';
-        setServerError(msg);
+        setServerError(data.errors?.[0]?.msg || data.error || 'Error del servidor');
         return;
       }
 
-      // Sync the AuthContext so the rest of the app knows the user is in
       await checkAuth();
       localStorage.removeItem('pendingEventAction');
-
       setDone(true);
 
       setTimeout(() => {
@@ -114,7 +99,7 @@ const PublicLogin = () => {
     }
   };
 
-  // ── Field helper ─────────────────────────────────────────────────────────
+  // ── Field helper ──────────────────────────────────────────────────────────
   const field = (id, label, type, icon, placeholder, required = false) => (
     <div>
       <label className="block text-sm font-medium text-text_secondary mb-2">
@@ -137,13 +122,11 @@ const PublicLogin = () => {
           autoComplete={id === 'email' ? 'email' : id === 'name' ? 'name' : 'tel'}
         />
       </div>
-      {errors[id] && (
-        <p className="mt-1 text-xs text-red-400">{errors[id]}</p>
-      )}
+      {errors[id] && <p className="mt-1 text-xs text-red-400">{errors[id]}</p>}
     </div>
   );
 
-  // ── Success state ────────────────────────────────────────────────────────
+  // ── Success ───────────────────────────────────────────────────────────────
   if (done) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -159,7 +142,7 @@ const PublicLogin = () => {
     );
   }
 
-  // ── Loading auth check ───────────────────────────────────────────────────
+  // ── Auth loading ──────────────────────────────────────────────────────────
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -168,17 +151,15 @@ const PublicLogin = () => {
     );
   }
 
-  // ── Main form ────────────────────────────────────────────────────────────
+  // ── Form ──────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      {/* Background blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
       </div>
 
       <div className="relative w-full max-w-md">
-        {/* Back */}
         <div className="absolute -top-14 left-0">
           <Link to="/" className="inline-flex items-center gap-2 text-text_secondary hover:text-white transition-colors">
             <ArrowLeft size={18} />
@@ -186,7 +167,6 @@ const PublicLogin = () => {
           </Link>
         </div>
 
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-purple-600 mb-4">
             <Music size={32} className="text-white" />
@@ -197,10 +177,7 @@ const PublicLogin = () => {
           </p>
         </div>
 
-        {/* Card */}
         <div className="glass-card border border-white/10 rounded-2xl p-8 shadow-2xl">
-
-          {/* Event badge */}
           {eventId && (
             <div className="mb-6 p-4 bg-accent/10 border border-accent/20 rounded-xl flex items-center gap-3">
               <Calendar size={20} className="text-accent shrink-0" />
@@ -215,21 +192,22 @@ const PublicLogin = () => {
             {eventId ? 'Confirmar asistencia' : 'Ingresa tus datos'}
           </h2>
           <p className="text-sm text-text_muted mb-6">
-            Solo te pediremos esta información una vez
+            {isAuthenticated && user?.role === 'fan'
+              ? 'Confirma que tus datos son correctos'
+              : 'Solo te pediremos esta información una vez'}
           </p>
 
-          {/* Server error */}
           {serverError && (
             <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-start gap-2">
-              <span className="text-base">⚠️</span>
+              <span>⚠️</span>
               <p>{serverError}</p>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            {field('name',  'Nombre completo',      'text',  <User  size={18} />, 'Tu nombre',         true)}
-            {field('phone', 'Número de teléfono',   'tel',   <Phone size={18} />, '+506 8888-0000'          )}
-            {field('email', 'Correo electrónico',   'email', <Mail  size={18} />, 'tu@correo.com',     true)}
+            {field('name',  'Nombre completo',    'text',  <User  size={18} />, 'Tu nombre',     true)}
+            {field('phone', 'Número de teléfono', 'tel',   <Phone size={18} />, '+506 8888-0000'      )}
+            {field('email', 'Correo electrónico', 'email', <Mail  size={18} />, 'tu@correo.com', true)}
 
             <button
               type="submit"
@@ -250,7 +228,6 @@ const PublicLogin = () => {
             </button>
           </form>
 
-          {/* Benefits */}
           <div className="mt-6 pt-6 border-t border-white/10 space-y-2">
             <div className="flex items-center gap-2 text-sm text-text_secondary">
               <Calendar size={14} className="text-accent shrink-0" />
