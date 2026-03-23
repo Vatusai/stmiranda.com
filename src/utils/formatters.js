@@ -3,6 +3,17 @@
  * Utilidades para formatear datos
  */
 
+// Parse a date string (YYYY-MM-DD) in local time to avoid UTC offset shifting the day
+const parseLocalDate = (dateString) => {
+  if (!dateString) return new Date(dateString);
+  // Date-only strings (no time component) must be parsed locally, not as UTC
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
+  return new Date(dateString);
+};
+
 // Formatear moneda
 export const currency = (value, currency = 'USD') => {
   return new Intl.NumberFormat('es-CR', {
@@ -16,7 +27,7 @@ export const currency = (value, currency = 'USD') => {
 // Formatear fecha
 export const date = (dateString) => {
   if (!dateString) return '-';
-  const date = new Date(dateString);
+  const date = parseLocalDate(dateString);
   return new Intl.DateTimeFormat('es-ES', {
     day: '2-digit',
     month: 'long',
@@ -27,7 +38,7 @@ export const date = (dateString) => {
 // Formatear fecha corta
 export const dateShort = (dateString) => {
   if (!dateString) return '-';
-  const date = new Date(dateString);
+  const date = parseLocalDate(dateString);
   return new Intl.DateTimeFormat('es-ES', {
     day: '2-digit',
     month: '2-digit',
@@ -38,14 +49,14 @@ export const dateShort = (dateString) => {
 // Obtener día
 export const day = (dateString) => {
   if (!dateString) return '-';
-  const date = new Date(dateString);
+  const date = parseLocalDate(dateString);
   return date.getDate();
 };
 
 // Obtener mes corto
 export const monthShort = (dateString) => {
   if (!dateString) return '-';
-  const date = new Date(dateString);
+  const date = parseLocalDate(dateString);
   return new Intl.DateTimeFormat('es-ES', { month: 'short' }).format(date);
 };
 
