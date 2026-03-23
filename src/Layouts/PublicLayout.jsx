@@ -25,6 +25,46 @@ import { initGlowEffect } from "../utils/glowEffect";
 import { useLanguage } from "../contexts/LanguageContext";
 import { translations } from "../translations/translations";
 
+const stats = [
+  { number: '15',  suffix: '+', label: 'Años de experiencia\nen Arte Escénico' },
+  { number: '1000', suffix: '+', label: 'Eventos realizados\ncon éxito' },
+];
+
+const StatsStrip = () => (
+  <div className="relative py-12 sm:py-16">
+    {/* Hairline rules — frame without boxing */}
+    <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/8 to-transparent" />
+    <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/8 to-transparent" />
+
+    <div className="container mx-auto px-6">
+      <div className="flex items-center justify-center gap-12 sm:gap-20 lg:gap-28">
+        {stats.map((s, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && (
+              <div className="w-px h-10 bg-white/10 flex-shrink-0" />
+            )}
+            <div
+              className="text-center"
+              data-aos="fade-up"
+              data-aos-delay={100 + i * 120}
+            >
+              {/* Number — ultra-thin for editorial luxury feel */}
+              <div className="text-5xl sm:text-6xl font-thin text-white tracking-tight leading-none select-none">
+                {s.number}
+                <span className="text-violet-400/50">{s.suffix}</span>
+              </div>
+              {/* Label — tiny uppercase with generous tracking */}
+              <p className="mt-3 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-gray-500 leading-relaxed whitespace-pre-line">
+                {s.label}
+              </p>
+            </div>
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
 const PublicContent = () => {
   const { language } = useLanguage();
   const t = translations[language];
@@ -60,6 +100,7 @@ const PublicContent = () => {
       
       {/* Main sections */}
       <Hero />
+      <StatsStrip />
       <PublicEventsSection />
       <Skills />
       <Service />
