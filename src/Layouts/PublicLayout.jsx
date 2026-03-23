@@ -20,8 +20,6 @@ import ContactWizard from "../components/ContactWizard";
 import FloatingActionButton from "../components/FloatingActionButton";
 import MovingOrbs from "../components/MovingOrbs";
 import Preloader from "../components/Preloader";
-import AdminAccess from "../components/admin-access/AdminAccess";
-
 // Utils
 import { initGlowEffect } from "../utils/glowEffect";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -73,9 +71,6 @@ const PublicContent = () => {
       
       {/* Floating Action Button */}
       <FloatingActionButton />
-      
-      {/* Admin Access - Botón discreto */}
-      <AdminAccess variant="floating" position="bottom-left" />
       
       {/* Footer */}
       <footer className="section-pop-artist py-8 text-center border-t border-accent/20">
