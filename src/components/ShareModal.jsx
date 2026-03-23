@@ -3,10 +3,23 @@
  * Shows the event link so the user can copy and share it manually.
  */
 import React, { useState } from 'react';
-import { X, Copy, Check, Link2 } from 'lucide-react';
+import { X, Copy, Check, MessageCircle, Link2 } from 'lucide-react';
 
 const ShareModal = ({ event, url, onClose }) => {
   const [copied, setCopied] = useState(false);
+
+  const eventDate = event.date
+    ? new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+        .format((() => { const [y,m,d] = event.date.split('-').map(Number); return new Date(y, m-1, d); })())
+    : null;
+
+  const shareText = [
+    event.title,
+    eventDate ? `📅 ${eventDate}` : null,
+    event.location ? `📍 ${event.location}` : null,
+    event.event_type === 'gratis' ? '✅ Entrada gratuita' : null,
+    url,
+  ].filter(Boolean).join('\n');
 
   const handleCopy = async () => {
     try {
@@ -65,18 +78,30 @@ const ShareModal = ({ event, url, onClose }) => {
           </div>
         </div>
 
-        {/* Copy link */}
-        <button
-          onClick={handleCopy}
-          className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200
-            ${copied
-              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-              : 'bg-white/10 hover:bg-white/15 text-white border border-white/10'
-            }`}
-        >
-          {copied ? <Check size={18} /> : <Copy size={18} />}
-          {copied ? '¡Enlace copiado!' : 'Copiar enlace'}
-        </button>
+        {/* Buttons */}
+        <div className="space-y-2">
+          <button
+            onClick={handleCopy}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200
+              ${copied
+                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                : 'bg-white/10 hover:bg-white/15 text-white border border-white/10'
+              }`}
+          >
+            {copied ? <Check size={18} /> : <Copy size={18} />}
+            {copied ? '¡Enlace copiado!' : 'Copiar enlace'}
+          </button>
+
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-colors bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#25D366] border border-[#25D366]/20"
+          >
+            <MessageCircle size={18} />
+            Compartir por WhatsApp
+          </a>
+        </div>
       </div>
     </div>
   );
