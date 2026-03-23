@@ -71,23 +71,6 @@ const Hero = () => {
               </a>
             </div>
 
-            {/* Stats Grid - Modern Music Industry Focus */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-2xl mx-auto">
-              {hero.hero_content.map((content, i) => (
-                <div
-                  key={i}
-                  data-aos="fade-up"
-                  data-aos-delay={400 + (i * 200)}
-                  className="stat-item-pop glass-card glow-effect glow-effect-purple"
-                >
-                  <div className="glow-mask"></div>
-                  <div className="glow-effect-content">
-                    <span className="stat-number-pop text-white text-2xl sm:text-3xl font-bold">{content.count}</span>
-                    <p className="stat-label-pop text-base text-white mt-2">{content.text}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Hero Image - Right Side - Mobile Optimized */}
