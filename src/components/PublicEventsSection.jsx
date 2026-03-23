@@ -8,18 +8,20 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from "../contexts/LanguageContext";
 import { useAuth } from "../contexts/AuthContext";
 import { translations } from "../translations/translations";
-import { 
-  Calendar, 
-  MapPin, 
-  Clock, 
-  Users, 
-  ExternalLink, 
-  ChevronUp, 
+import {
+  Calendar,
+  MapPin,
+  Clock,
+  Users,
+  ExternalLink,
+  ChevronUp,
   ChevronDown,
   Ticket,
   Sparkles,
-  CheckCircle
+  CheckCircle,
+  Share2,
 } from 'lucide-react';
+import ShareModal from './ShareModal';
 
 const PublicEventsSection = () => {
   const navigate = useNavigate();
@@ -32,6 +34,7 @@ const PublicEventsSection = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [userRegistrations, setUserRegistrations] = useState(new Set());
   const [registrationSuccess, setRegistrationSuccess] = useState(null);
+  const [shareEvent, setShareEvent] = useState(null);
   const carouselRef = useRef(null);
 
   useEffect(() => {
@@ -84,57 +87,10 @@ const PublicEventsSection = () => {
     }
   };
 
-  const handleRegister = async (eventId) => {
-    // Wait for auth check to complete
-    if (isAuthLoading) {
-      return;
-    }
-    
-    // If not authenticated, save pending action and redirect to login
-    if (!isAuthenticated) {
-      localStorage.setItem('pendingEventAction', JSON.stringify({
-        eventId,
-        action: 'attend',
-        timestamp: Date.now()
-      }));
-      navigate(`/login?eventId=${eventId}`);
-      return;
-    }
-    
-    // User is authenticated, proceed with registration
-    setIsRegistering(true);
-    try {
-      const response = await fetch(`/api/events/${eventId}/register`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setUserRegistrations(prev => new Set([...prev, eventId]));
-        setRegistrationSuccess(eventId);
-        fetchEvents();
-        // Clear success message after 5 seconds
-        setTimeout(() => setRegistrationSuccess(null), 5000);
-      } else if (data.requiresAuth || response.status === 401) {
-        // Session expired or not authenticated - redirect to login
-        localStorage.setItem('pendingEventAction', JSON.stringify({
-          eventId,
-          action: 'attend',
-          timestamp: Date.now()
-        }));
-        navigate(`/login?eventId=${eventId}`);
-      } else {
-        alert(data.error || 'Error');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Error de conexión. Intenta de nuevo.');
-    } finally {
-      setIsRegistering(false);
-    }
+  const handleAttend = (event) => {
+    // Navigate to the dedicated event page — handles both auth states inline
+    const destination = event.slug ? `/eventos/${event.slug}` : `/login?eventId=${event.id}`;
+    navigate(destination);
   };
 
   // Parse YYYY-MM-DD strings in local time (not UTC) to prevent day shift
@@ -292,12 +248,6 @@ const PublicEventsSection = () => {
                     : (language === 'es' ? 'Evento Pagado' : 'Paid Event')
                   }
                 </span>
-                {activeEvent.attendeeCount > 0 && (
-                  <span className="flex items-center gap-1 text-text_muted text-sm">
-                    <Users size={14} />
-                    {activeEvent.attendeeCount} {language === 'es' ? 'asistentes' : 'attendees'}
-                  </span>
-                )}
               </div>
 
               {/* Event Title */}
@@ -355,56 +305,50 @@ const PublicEventsSection = () => {
                 </div>
               )}
 
-              {/* CTA Button */}
-              <div className="flex gap-4">
-                {!isFree && activeEvent.external_link ? (
-                  <a 
+              {/* CTA Buttons */}
+              <div className="flex gap-3">
+                {userRegistrations.has(activeEvent.id) ? (
+                  // Already registered — show confirmation, still allow share
+                  <button
+                    disabled
+                    className="flex-1 py-4 px-6 bg-emerald-500/20 text-emerald-400 font-bold rounded-2xl border border-emerald-500/30 flex items-center justify-center gap-2 cursor-default"
+                  >
+                    <CheckCircle size={18} />
+                    {language === 'es' ? 'Asistencia confirmada' : 'Attendance confirmed'}
+                  </button>
+                ) : !isFree && activeEvent.external_link ? (
+                  <a
                     href={activeEvent.external_link}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1"
                   >
-                    <button className="w-full py-4 px-8 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-2xl hover:shadow-lg hover:shadow-amber-500/25 transition-all duration-300 flex items-center justify-center gap-2">
+                    <button className="w-full py-4 px-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-2xl hover:shadow-lg hover:shadow-amber-500/25 transition-all duration-300 flex items-center justify-center gap-2">
                       {language === 'es' ? 'Reservar' : 'Book Now'}
                       <ExternalLink size={18} />
                     </button>
                   </a>
-                ) : userRegistrations.has(activeEvent.id) ? (
-                  // Already registered state
-                  <button
-                    disabled
-                    className="flex-1 py-4 px-8 bg-emerald-500/20 text-emerald-400 font-bold rounded-2xl border border-emerald-500/30 flex items-center justify-center gap-2 cursor-default"
-                  >
-                    <CheckCircle size={18} />
-                    {language === 'es' ? 'Asistencia confirmada' : 'Attendance confirmed'}
-                  </button>
                 ) : (
                   <button
-                    onClick={() => handleRegister(activeEvent.id)}
-                    disabled={isRegistering || isAuthLoading}
-                    className="flex-1 py-4 px-8 bg-gradient-to-r from-accent to-purple-600 text-white font-bold rounded-2xl hover:shadow-lg hover:shadow-accent/25 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
+                    onClick={() => handleAttend(activeEvent)}
+                    className="flex-1 py-4 px-6 bg-gradient-to-r from-accent to-purple-600 text-white font-bold rounded-2xl hover:shadow-lg hover:shadow-accent/25 transition-all duration-300 flex items-center justify-center gap-2"
                   >
-                    {isAuthLoading ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        <span className="text-sm">Cargando...</span>
-                      </>
-                    ) : isRegistering ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        {language === 'es' ? 'Registrando...' : 'Registering...'}
-                      </>
-                    ) : (
-                      <>
-                        {isFree 
-                          ? (language === 'es' ? 'Asistir' : 'Attend')
-                          : (language === 'es' ? 'Reservar' : 'Book')
-                        }
-                        <Sparkles size={18} />
-                      </>
-                    )}
+                    <Sparkles size={18} />
+                    {isFree
+                      ? (language === 'es' ? 'Asistir' : 'Attend')
+                      : (language === 'es' ? 'Reservar' : 'Book')
+                    }
                   </button>
                 )}
+
+                {/* Compartir */}
+                <button
+                  onClick={() => setShareEvent(activeEvent)}
+                  className="py-4 px-4 bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white rounded-2xl border border-white/10 transition-all duration-300 flex items-center justify-center"
+                  title={language === 'es' ? 'Compartir' : 'Share'}
+                >
+                  <Share2 size={20} />
+                </button>
               </div>
             </div>
           </div>
@@ -514,6 +458,15 @@ const PublicEventsSection = () => {
           scrollbar-width: none;
         }
       `}</style>
+
+      {/* Share modal */}
+      {shareEvent && (
+        <ShareModal
+          event={shareEvent}
+          url={`${window.location.origin}/eventos/${shareEvent.slug}`}
+          onClose={() => setShareEvent(null)}
+        />
+      )}
     </section>
   );
 };

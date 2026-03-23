@@ -13,6 +13,35 @@ import { sendEmail } from '../services/emailService.js';
 const router = express.Router();
 
 // ============================================
+// SLUG HELPERS
+// ============================================
+
+function generateSlug(title) {
+  return title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .substring(0, 80) || 'evento';
+}
+
+function ensureUniqueSlug(title, excludeId = null) {
+  const base = generateSlug(title);
+  let slug = base, i = 2;
+  while (true) {
+    const existing = excludeId
+      ? db.prepare('SELECT id FROM events WHERE slug = ? AND id != ?').get(slug, excludeId)
+      : db.prepare('SELECT id FROM events WHERE slug = ?').get(slug);
+    if (!existing) break;
+    slug = `${base}-${i++}`;
+  }
+  return slug;
+}
+
+// ============================================
 // PUBLIC ENDPOINTS (no auth required)
 // ============================================
 
@@ -147,6 +176,35 @@ router.post('/:id/register', optionalAuth, async (req, res) => {
     });
   } catch (error) {
     console.error('Register for event error:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// GET /api/events/by-slug/:slug - Get single public event by slug
+router.get('/by-slug/:slug', (req, res) => {
+  try {
+    const { slug } = req.params;
+    const event = db.prepare(
+      "SELECT * FROM events WHERE slug = ? AND visibility = 'publico' AND status != 'cancelled'"
+    ).get(slug);
+
+    if (!event) {
+      return res.status(404).json({ error: 'Evento no encontrado' });
+    }
+
+    const attendeeCount = db.prepare(
+      'SELECT COUNT(*) as count FROM event_attendees WHERE event_id = ?'
+    ).get(event.id);
+
+    res.json({
+      event: {
+        ...event,
+        services: event.services ? JSON.parse(event.services) : [],
+        attendeeCount: attendeeCount.count,
+      }
+    });
+  } catch (error) {
+    console.error('Get event by slug error:', error);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -296,23 +354,24 @@ router.post('/', [
       location, status, budget, description, services, notes,
       visibility, event_type, flyer_url, external_link
     } = req.body;
-    
+
     const id = uuidv4();
-    
+    const slug = ensureUniqueSlug(title);
+
     db.prepare(`
       INSERT INTO events (
-        id, title, contact_id, inquiry_id, client_name, date, time, duration, 
+        id, title, contact_id, inquiry_id, client_name, date, time, duration,
         type, location, status, budget, description, services, notes,
-        visibility, event_type, flyer_url, external_link
+        visibility, event_type, flyer_url, external_link, slug
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
-      id, title, contact_id || null, inquiry_id || null, client_name || null, 
-      date, time || null, duration || null, type || null, location || null, 
-      status || 'pending', budget || null, description || null, 
+      id, title, contact_id || null, inquiry_id || null, client_name || null,
+      date, time || null, duration || null, type || null, location || null,
+      status || 'pending', budget || null, description || null,
       services ? JSON.stringify(services) : '[]', notes || null,
-      visibility || 'privado', event_type || null, flyer_url || null, 
-      external_link || null
+      visibility || 'privado', event_type || null, flyer_url || null,
+      external_link || null, slug
     );
     
     let event = db.prepare('SELECT * FROM events WHERE id = ?').get(id);
@@ -356,10 +415,15 @@ router.put('/:id', async (req, res) => {
     
     const allowedFields = [
       'title', 'contact_id', 'inquiry_id', 'client_name', 'date', 'time', 'duration',
-      'type', 'location', 'status', 'budget', 'description', 'services', 'notes', 
-      'google_calendar_id', 'visibility', 'event_type', 'flyer_url', 'external_link'
+      'type', 'location', 'status', 'budget', 'description', 'services', 'notes',
+      'google_calendar_id', 'visibility', 'event_type', 'flyer_url', 'external_link', 'slug'
     ];
-    
+
+    // Auto-regenerate slug when title changes (unless caller explicitly provides a slug)
+    if (updates.title && !updates.slug) {
+      updates.slug = ensureUniqueSlug(updates.title, id);
+    }
+
     const setClause = [];
     const values = [];
     

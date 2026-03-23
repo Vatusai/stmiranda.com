@@ -20,6 +20,18 @@ db.pragma('foreign_keys = ON');
 
 // Migrations: add new columns without breaking existing data
 try { db.exec(`ALTER TABLE users ADD COLUMN phone TEXT`); } catch {}
+try { db.exec(`ALTER TABLE events ADD COLUMN slug TEXT`); } catch {}
+// Backfill slugs for events that have none
+try {
+  const toSlug = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-').substring(0, 80);
+  const missing = db.prepare("SELECT id, title FROM events WHERE slug IS NULL OR slug = ''").all();
+  const upd = db.prepare('UPDATE events SET slug = ? WHERE id = ?');
+  for (const ev of missing) {
+    let base = toSlug(ev.title || 'evento') || 'evento', slug = base, i = 2;
+    while (db.prepare('SELECT id FROM events WHERE slug = ? AND id != ?').get(slug, ev.id)) slug = `${base}-${i++}`;
+    upd.run(slug, ev.id);
+  }
+} catch {}
 
 console.log('📦 Database connected:', DB_PATH);
 

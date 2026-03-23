@@ -9,7 +9,8 @@
     "dev": "nodemon src/server.js",
     "init-db": "node src/utils/initDb.js",
     "reset-db": "rm -f database/app.db && npm run init-db",
-    "migrate-v2": "node src/utils/migrateToV2.js"
+    "migrate-v2": "node src/utils/migrateToV2.js",
+    "migrate-slug": "node src/utils/migrateAddSlug.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

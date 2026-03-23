@@ -11,7 +11,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { LanguageProvider } from '../contexts/LanguageContext';
 
 // Public Site Layout (con todos los componentes originales)
-import PublicLayout from '../layouts/PublicLayout';
+import PublicLayout from '../Layouts/PublicLayout';
 
 // Admin Layout
 import AdminLayout from '../admin/layouts/AdminLayout';
@@ -19,6 +19,7 @@ import AdminLayout from '../admin/layouts/AdminLayout';
 // Admin Pages
 import Login from '../admin/pages/Login';
 import PublicLogin from '../pages/PublicLogin';
+import EventPage from '../pages/EventPage';
 import Dashboard from '../admin/pages/Dashboard';
 import Calendar from '../admin/pages/Calendar';
 import Contacts from '../admin/pages/Contacts';
@@ -83,6 +84,9 @@ const AppRouter = () => {
         {/* Public Login/Register for fans */}
         <Route path="/login" element={<PublicLogin />} />
         <Route path="/register" element={<PublicLogin mode="register" />} />
+
+        {/* Public shareable event pages */}
+        <Route path="/eventos/:slug" element={<EventPage />} />
 
         {/* Rutas del admin */}
         <Route 
