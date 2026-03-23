@@ -1,314 +1,240 @@
 /**
- * PublicLogin
- * Login/Register page for fans to attend events
+ * AttendeeAccess
+ * Lightweight "Confirmar asistencia" page — no password required.
+ * Replaces the old login/register flow for public event attendees.
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Mail, Lock, User, Phone, Music, ArrowLeft, Calendar, Sparkles } from 'lucide-react';
+import { User, Phone, Mail, Music, ArrowLeft, Calendar, Sparkles, CheckCircle } from 'lucide-react';
 
-const PublicLogin = ({ mode: initialMode = 'login' }) => {
-  const { login, register, isAuthenticated, user, isLoading: authIsLoading } = useAuth();
+const PublicLogin = () => {
+  const { isAuthenticated, isLoading: authLoading, checkAuth } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const redirect = searchParams.get('redirect') || '/';
-  const eventId = searchParams.get('eventId');
-  
-  // Prevent double execution from React StrictMode and effect re-runs
-  const pendingActionHandledRef = useRef(false);
 
-  const [mode, setMode] = useState(initialMode);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phone: ''
-  });
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
+  // Resolve eventId from URL or from a pending action saved before redirect
+  const eventIdFromUrl = searchParams.get('eventId');
+  const pendingRaw = localStorage.getItem('pendingEventAction');
+  const pendingEventId = (() => {
+    try { return pendingRaw ? JSON.parse(pendingRaw)?.eventId : null; }
+    catch { return null; }
+  })();
+  const eventId = eventIdFromUrl || pendingEventId;
 
-  // Check for pending event action on mount
+  const [formData, setFormData] = useState({ name: '', phone: '', email: '' });
+  const [errors, setErrors]     = useState({});
+  const [serverError, setServerError] = useState('');
+  const [isLoading, setIsLoading]     = useState(false);
+  const [done, setDone] = useState(false);
+
+  // ── If the user already has a valid session, skip the form ──────────────
   useEffect(() => {
-    const pendingAction = localStorage.getItem('pendingEventAction');
-    if (pendingAction && !eventId) {
-      const parsed = JSON.parse(pendingAction);
-      if (parsed?.eventId) {
-        // Update URL with eventId without navigating
-        const newUrl = `${window.location.pathname}?eventId=${parsed.eventId}`;
-        window.history.replaceState({}, '', newUrl);
+    if (authLoading) return;
+    if (isAuthenticated) {
+      if (eventId) {
+        registerAndRedirect(eventId);
+      } else {
+        navigate('/');
       }
     }
-  }, [eventId]);
+  }, [isAuthenticated, authLoading]); // eslint-disable-line
 
-  // Handle authenticated user (triggered after login or registration completes)
-  useEffect(() => {
-    // Wait for auth initialization to complete before acting
-    if (authIsLoading) return;
+  // ── Validation ───────────────────────────────────────────────────────────
+  const validate = () => {
+    const e = {};
+    if (!formData.name.trim())
+      e.name = 'El nombre es requerido';
+    if (!formData.email.trim())
+      e.email = 'El correo es requerido';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+      e.email = 'Correo electrónico inválido';
+    if (formData.phone && !/^[\d\s\+\-\(\)]{6,20}$/.test(formData.phone))
+      e.phone = 'Número de teléfono inválido';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
 
-    if (isAuthenticated && user) {
-      // Guard against React StrictMode double-invocation and effect re-runs.
-      if (pendingActionHandledRef.current) return;
-      pendingActionHandledRef.current = true;
-
-      // Check if there's a pending event registration
-      const pendingAction = localStorage.getItem('pendingEventAction');
-
-      if (pendingAction) {
-        try {
-          const parsed = JSON.parse(pendingAction);
-          if (parsed?.action === 'attend' && parsed?.eventId) {
-            localStorage.removeItem('pendingEventAction');
-            completeEventRegistration(parsed.eventId);
-            return;
-          }
-        } catch {
-          localStorage.removeItem('pendingEventAction');
-        }
-      }
-
-      // No pending action — redirect after a short delay so any success
-      // message set by handleSubmit is visible before leaving the page
-      setTimeout(() => navigate(redirect), 1800);
-    }
-  }, [isAuthenticated, user, authIsLoading, navigate, redirect]);
-
-  const completeEventRegistration = async (eventId) => {
-    setIsLoading(true);
+  // ── After login, register for event if present ───────────────────────────
+  const registerAndRedirect = async (eid) => {
     try {
-      const response = await fetch(`/api/events/${eventId}/register`, {
+      await fetch(`/api/events/${eid}/register`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccessMessage('¡Asistencia confirmada! Te esperamos en el evento. 🎶');
-        setTimeout(() => {
-          navigate(`/?registered=${eventId}`);
-        }, 2000);
-      } else {
-        setError(data.error || 'Error al registrarse en el evento');
-      }
-    } catch (err) {
-      setError('Error de conexión. Intenta de nuevo.');
-    } finally {
-      setIsLoading(false);
-    }
+    } catch { /* non-blocking */ }
+    localStorage.removeItem('pendingEventAction');
+    navigate(`/?registered=${eid}`);
   };
 
+  // ── Form submit ──────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccessMessage('');
+    if (!validate()) return;
+
     setIsLoading(true);
+    setServerError('');
 
     try {
-      if (mode === 'register') {
-        if (formData.password !== formData.confirmPassword) {
-          setError('Las contraseñas no coinciden');
-          setIsLoading(false);
-          return;
-        }
+      const res = await fetch('/api/auth/attendee-access', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:    formData.name.trim(),
+          email:   formData.email.trim().toLowerCase(),
+          phone:   formData.phone.trim() || undefined,
+          eventId: eventId || undefined,
+        }),
+      });
 
-        const result = await register(formData.name, formData.email, formData.password, formData.phone || undefined);
-        if (!result.success) {
-          setError(result.error);
-        } else {
-          const hasPendingEvent = !!localStorage.getItem('pendingEventAction');
-          setSuccessMessage(
-            hasPendingEvent
-              ? '¡Cuenta creada! Registrándote al evento...'
-              : '¡Cuenta creada exitosamente! Bienvenida 🎉'
-          );
-        }
-      } else {
-        const result = await login(formData.email, formData.password);
-        if (!result.success) {
-          setError(result.error);
-        }
+      const data = await res.json();
+
+      if (!res.ok) {
+        const msg = data.errors?.[0]?.msg || data.error || 'Error del servidor';
+        setServerError(msg);
+        return;
       }
-    } catch (err) {
-      setError('Error de conexión. Intenta de nuevo.');
+
+      // Sync the AuthContext so the rest of the app knows the user is in
+      await checkAuth();
+      localStorage.removeItem('pendingEventAction');
+
+      setDone(true);
+
+      setTimeout(() => {
+        navigate(eventId ? `/?registered=${eventId}` : '/');
+      }, 1800);
+
+    } catch {
+      setServerError('Error de conexión. Intenta de nuevo.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const toggleMode = () => {
-    setMode(mode === 'login' ? 'register' : 'login');
-    setError('');
-    setSuccessMessage('');
-  };
+  // ── Field helper ─────────────────────────────────────────────────────────
+  const field = (id, label, type, icon, placeholder, required = false) => (
+    <div>
+      <label className="block text-sm font-medium text-text_secondary mb-2">
+        {label}
+        {!required && <span className="ml-2 text-xs text-text_muted font-normal">(opcional)</span>}
+      </label>
+      <div className="relative">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text_muted">{icon}</span>
+        <input
+          type={type}
+          value={formData[id]}
+          onChange={(e) => {
+            setFormData({ ...formData, [id]: e.target.value });
+            if (errors[id]) setErrors({ ...errors, [id]: '' });
+          }}
+          className={`w-full bg-white/5 border rounded-xl pl-10 pr-4 py-3 text-white placeholder-text_muted focus:outline-none transition-colors
+            ${errors[id] ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-accent/50'}`}
+          placeholder={placeholder}
+          required={required}
+          autoComplete={id === 'email' ? 'email' : id === 'name' ? 'name' : 'tel'}
+        />
+      </div>
+      {errors[id] && (
+        <p className="mt-1 text-xs text-red-400">{errors[id]}</p>
+      )}
+    </div>
+  );
 
+  // ── Success state ────────────────────────────────────────────────────────
+  if (done) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center space-y-4">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-500/20 border border-emerald-500/30">
+            <CheckCircle size={40} className="text-emerald-400" />
+          </div>
+          <h2 className="text-2xl font-bold text-white">¡Asistencia confirmada!</h2>
+          <p className="text-text_secondary">Te esperamos en el evento 🎶</p>
+          <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto mt-2" />
+        </div>
+      </div>
+    );
+  }
+
+  // ── Loading auth check ───────────────────────────────────────────────────
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-white/20 border-t-accent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // ── Main form ────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      {/* Background decoration */}
+      {/* Background blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
       </div>
 
       <div className="relative w-full max-w-md">
-        {/* Back button */}
-        <div className="absolute -top-16 left-0">
-          <Link 
-            to="/" 
-            className="inline-flex items-center gap-2 text-text_secondary hover:text-white transition-colors"
-          >
+        {/* Back */}
+        <div className="absolute -top-14 left-0">
+          <Link to="/" className="inline-flex items-center gap-2 text-text_secondary hover:text-white transition-colors">
             <ArrowLeft size={18} />
             <span>Volver al inicio</span>
           </Link>
         </div>
 
-        {/* Logo & Title */}
+        {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-purple-600 mb-4">
             <Music size={32} className="text-white" />
           </div>
           <h1 className="text-2xl font-bold text-white">Stephanie Miranda</h1>
           <p className="text-text_secondary mt-1">
-            {eventId ? 'Regístrate para asistir al evento' : 'Accede a tu cuenta'}
+            {eventId ? 'Confirma tu asistencia al evento' : 'Accede rápidamente'}
           </p>
         </div>
 
-        {/* Login/Register Card */}
+        {/* Card */}
         <div className="glass-card border border-white/10 rounded-2xl p-8 shadow-2xl">
-          {/* Event indicator */}
+
+          {/* Event badge */}
           {eventId && (
-            <div className="mb-6 p-4 bg-accent/10 border border-accent/20 rounded-xl">
-              <div className="flex items-center gap-3">
-                <Calendar size={20} className="text-accent" />
-                <div>
-                  <p className="text-sm text-text_muted">Evento seleccionado</p>
-                  <p className="text-white font-medium">Asistencia confirmada próximamente</p>
-                </div>
+            <div className="mb-6 p-4 bg-accent/10 border border-accent/20 rounded-xl flex items-center gap-3">
+              <Calendar size={20} className="text-accent shrink-0" />
+              <div>
+                <p className="text-xs text-text_muted">Registrándote para el evento</p>
+                <p className="text-white font-medium text-sm">Tu lugar quedará reservado al enviar</p>
               </div>
             </div>
           )}
 
-          <h2 className="text-xl font-semibold text-white text-center mb-6">
-            {mode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}
+          <h2 className="text-xl font-semibold text-white mb-1">
+            {eventId ? 'Confirmar asistencia' : 'Ingresa tus datos'}
           </h2>
+          <p className="text-sm text-text_muted mb-6">
+            Solo te pediremos esta información una vez
+          </p>
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
-              <div className="flex items-start gap-2">
-                <span className="text-lg">⚠️</span>
-                <p>{error}</p>
-              </div>
+          {/* Server error */}
+          {serverError && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-start gap-2">
+              <span className="text-base">⚠️</span>
+              <p>{serverError}</p>
             </div>
           )}
 
-          {successMessage && (
-            <div className="mb-4 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-400 text-sm">
-              <div className="flex items-center gap-2">
-                <Sparkles size={16} />
-                <p>{successMessage}</p>
-              </div>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {mode === 'register' && (
-              <div>
-                <label className="block text-sm font-medium text-text_secondary mb-2">
-                  Nombre completo
-                </label>
-                <div className="relative">
-                  <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text_muted" />
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white placeholder-text_muted focus:outline-none focus:border-accent/50 transition-colors"
-                    placeholder="Tu nombre"
-                    required
-                  />
-                </div>
-              </div>
-            )}
-
-            <div>
-              <label className="block text-sm font-medium text-text_secondary mb-2">
-                Correo electrónico
-              </label>
-              <div className="relative">
-                <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text_muted" />
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white placeholder-text_muted focus:outline-none focus:border-accent/50 transition-colors"
-                  placeholder="tu@email.com"
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-text_secondary mb-2">
-                Contraseña
-              </label>
-              <div className="relative">
-                <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text_muted" />
-                <input
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white placeholder-text_muted focus:outline-none focus:border-accent/50 transition-colors"
-                  placeholder="••••••••"
-                  required
-                  minLength={6}
-                />
-              </div>
-            </div>
-
-            {mode === 'register' && (
-              <div>
-                <label className="block text-sm font-medium text-text_secondary mb-2">
-                  Confirmar contraseña
-                </label>
-                <div className="relative">
-                  <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text_muted" />
-                  <input
-                    type="password"
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white placeholder-text_muted focus:outline-none focus:border-accent/50 transition-colors"
-                    placeholder="••••••••"
-                    required
-                  />
-                </div>
-              </div>
-            )}
-
-            {mode === 'register' && (
-              <div>
-                <label className="block text-sm font-medium text-text_secondary mb-2">
-                  Número de teléfono
-                  <span className="ml-2 text-xs text-text_muted font-normal">(opcional)</span>
-                </label>
-                <div className="relative">
-                  <Phone size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text_muted" />
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white placeholder-text_muted focus:outline-none focus:border-accent/50 transition-colors"
-                    placeholder="+506 8888-0000"
-                  />
-                </div>
-              </div>
-            )}
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            {field('name',  'Nombre completo',      'text',  <User  size={18} />, 'Tu nombre',         true)}
+            {field('phone', 'Número de teléfono',   'tel',   <Phone size={18} />, '+506 8888-0000'          )}
+            {field('email', 'Correo electrónico',   'email', <Mail  size={18} />, 'tu@correo.com',     true)}
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-4 bg-gradient-to-r from-accent to-purple-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-accent/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 bg-gradient-to-r from-accent to-purple-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-accent/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
             >
               {isLoading ? (
                 <>
@@ -317,57 +243,24 @@ const PublicLogin = ({ mode: initialMode = 'login' }) => {
                 </>
               ) : (
                 <>
-                  {mode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}
+                  <Sparkles size={18} />
+                  {eventId ? 'Confirmar asistencia' : 'Continuar'}
                 </>
               )}
             </button>
           </form>
 
-          {/* Toggle mode */}
-          <div className="mt-6 text-center">
-            <p className="text-text_secondary text-sm">
-              {mode === 'login' ? (
-                <>
-                  ¿No tienes cuenta?{' '}
-                  <button
-                    onClick={toggleMode}
-                    className="text-accent hover:text-accent/80 font-medium transition-colors"
-                  >
-                    Regístrate aquí
-                  </button>
-                </>
-              ) : (
-                <>
-                  ¿Ya tienes cuenta?{' '}
-                  <button
-                    onClick={toggleMode}
-                    className="text-accent hover:text-accent/80 font-medium transition-colors"
-                  >
-                    Inicia sesión
-                  </button>
-                </>
-              )}
-            </p>
-          </div>
-
-          {/* Benefits for registering */}
-          {mode === 'register' && (
-            <div className="mt-6 pt-6 border-t border-white/10">
-              <p className="text-xs text-text_muted text-center">
-                Al registrarte podrás:
-              </p>
-              <ul className="mt-3 space-y-2">
-                <li className="flex items-center gap-2 text-sm text-text_secondary">
-                  <Calendar size={14} className="text-accent" />
-                  <span>Registrarte en eventos públicos</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm text-text_secondary">
-                  <Sparkles size={14} className="text-accent" />
-                  <span>Recibir recordatorios por email</span>
-                </li>
-              </ul>
+          {/* Benefits */}
+          <div className="mt-6 pt-6 border-t border-white/10 space-y-2">
+            <div className="flex items-center gap-2 text-sm text-text_secondary">
+              <Calendar size={14} className="text-accent shrink-0" />
+              <span>Tu lugar quedará registrado automáticamente</span>
             </div>
-          )}
+            <div className="flex items-center gap-2 text-sm text-text_secondary">
+              <Sparkles size={14} className="text-accent shrink-0" />
+              <span>La próxima vez no tendrás que llenar nada</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

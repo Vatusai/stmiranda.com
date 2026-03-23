@@ -140,6 +140,85 @@ router.post('/change-password', requireAuth, [
   }
 });
 
+// POST /api/auth/attendee-access
+// Passwordless quick-access for event attendees.
+// Creates or updates the fan account by email, opens a 30-day session,
+// and registers them for the event when eventId is provided.
+router.post('/attendee-access', [
+  body('name').trim().notEmpty().withMessage('El nombre es requerido'),
+  body('email').isEmail().normalizeEmail().withMessage('Correo electrónico inválido'),
+  body('phone').optional().trim(),
+  body('eventId').optional().trim(),
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { name, email, phone, eventId } = req.body;
+
+    // Find or create the fan user
+    let user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+
+    if (user) {
+      // Update name / phone in case they changed
+      db.prepare(`
+        UPDATE users SET name = ?, phone = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+      `).run(name, phone || user.phone, user.id);
+      user = db.prepare('SELECT * FROM users WHERE id = ?').get(user.id);
+    } else {
+      // Create passwordless fan — store a random hash they will never use
+      const userId = uuidv4();
+      const unusedHash = await bcrypt.hash(uuidv4(), 8);
+      db.prepare(`
+        INSERT INTO users (id, name, email, password, phone, role, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, 'fan', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      `).run(userId, name, email, unusedHash, phone || null);
+      user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
+    }
+
+    // Register for event if eventId was provided
+    let eventRegistered = false;
+    if (eventId) {
+      const event = db.prepare(`
+        SELECT id FROM events WHERE id = ? AND visibility = 'publico' AND status != 'cancelled'
+      `).get(eventId);
+
+      if (event) {
+        db.prepare(`
+          INSERT OR IGNORE INTO event_attendees (id, event_id, user_id, registered_at)
+          VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+        `).run(uuidv4(), eventId, user.id);
+        eventRegistered = true;
+      }
+    }
+
+    // Issue a 30-day JWT cookie so the user stays logged in on this device
+    const token = jwt.sign(
+      { userId: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+
+    res.json({
+      success: true,
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      eventRegistered,
+    });
+  } catch (error) {
+    console.error('Attendee access error:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
 // POST /api/auth/register - Public user registration (for event attendance)
 router.post('/register', [
   body('name').trim().notEmpty().withMessage('El nombre es requerido'),

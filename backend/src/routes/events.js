@@ -82,6 +82,22 @@ router.get('/:id/public', (req, res) => {
   }
 });
 
+// GET /api/events/my-registrations - Get events the logged-in user registered for
+router.get('/my-registrations', requireAuth, (req, res) => {
+  try {
+    const registrations = db.prepare(`
+      SELECT ea.event_id, ea.registered_at, e.title, e.date
+      FROM event_attendees ea
+      JOIN events e ON e.id = ea.event_id
+      WHERE ea.user_id = ?
+    `).all(req.user.userId);
+    res.json({ registrations });
+  } catch (error) {
+    console.error('My registrations error:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
 // POST /api/events/:id/register - Register for event (public)
 router.post('/:id/register', optionalAuth, async (req, res) => {
   try {
@@ -90,8 +106,8 @@ router.post('/:id/register', optionalAuth, async (req, res) => {
     
     // Check if event exists and is public
     const event = db.prepare(
-      'SELECT * FROM events WHERE id = ? AND visibility = ? AND status = ?'
-    ).get(id, 'publico', 'confirmed');
+      "SELECT * FROM events WHERE id = ? AND visibility = 'publico' AND status != 'cancelled'"
+    ).get(id);
     
     if (!event) {
       return res.status(404).json({ error: 'Evento no encontrado o no disponible' });
