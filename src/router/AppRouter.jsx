@@ -35,6 +35,9 @@ import Clients from '../admin/pages/Clients';
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading, user } = useAuth();
 
+  // En desarrollo local, acceso directo sin credenciales
+  if (import.meta.env.DEV) return children;
+
   if (isLoading) return null;
 
   if (!isAuthenticated) {

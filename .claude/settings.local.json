@@ -12,7 +12,10 @@
       "WebFetch(domain:api.qrserver.com)",
       "Bash(find:*)",
       "Bash(npm run build:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(grep -r \"JWT_SECRET\\\\|token\\\\|password\" /Users/fabianorozco/Desktop/stmiranda.com/website/.env*)",
+      "Bash(node:*)",
+      "Bash(curl -s -X POST http://localhost:3001/api/auth/login -H \"Content-Type: application/json\" -d '{\"\"\"\"email\"\"\"\":\"\"\"\"steph\"\"\"\",\"\"\"\"password\"\"\"\":\"\"\"\"sari123456\"\"\"\"}')"
     ],
     "deny": [],
     "ask": []

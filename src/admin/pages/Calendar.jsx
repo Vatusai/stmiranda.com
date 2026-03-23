@@ -15,7 +15,6 @@ import {
   Clock, 
   MapPin, 
   Calendar as CalendarIcon,
-  ExternalLink,
   Edit,
   Trash2,
   Loader2,
@@ -137,10 +136,16 @@ const Calendar = () => {
     return days;
   };
 
+  // Parsear fecha como local (evita el desfase UTC)
+  const parseLocalDate = (dateStr) => {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  };
+
   // Obtener eventos de una fecha
   const getEventsForDate = (date) => {
     return events.filter(event => {
-      const eventDate = new Date(event.date);
+      const eventDate = parseLocalDate(event.date);
       return eventDate.toDateString() === date.toDateString();
     });
   };
@@ -246,8 +251,8 @@ const Calendar = () => {
   ];
 
   const monthEvents = events.filter(event => {
-    const eventDate = new Date(event.date);
-    return eventDate.getMonth() === currentDate.getMonth() && 
+    const eventDate = parseLocalDate(event.date);
+    return eventDate.getMonth() === currentDate.getMonth() &&
            eventDate.getFullYear() === currentDate.getFullYear();
   });
 
@@ -268,10 +273,7 @@ const Calendar = () => {
           <p className="text-gray-400 mt-1">Gestiona tus eventos y agenda</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="secondary" leftIcon={<ExternalLink size={16} />}>
-            Sincronizar con Google
-          </Button>
-          <Button 
+<Button 
             variant="primary" 
             leftIcon={<Plus size={18} />}
             onClick={() => setIsNewEventModalOpen(true)}

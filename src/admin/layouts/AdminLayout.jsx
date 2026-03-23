@@ -97,10 +97,11 @@ const AdminLayout = () => {
               <Link
                 key={item.name}
                 to={item.path}
+                onClick={() => setIsMobileMenuOpen(false)}
                 className={`
                   flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300
-                  ${active 
-                    ? 'bg-gradient-to-r from-violet-600/20 to-purple-600/20 text-violet-400 border border-violet-500/20' 
+                  ${active
+                    ? 'bg-gradient-to-r from-violet-600/20 to-purple-600/20 text-violet-400 border border-violet-500/20'
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
                   }
                   ${!isSidebarOpen && 'justify-center'}
@@ -116,7 +117,7 @@ const AdminLayout = () => {
         {/* Logout */}
         <div className={`absolute bottom-0 left-0 right-0 p-3 ${!isSidebarOpen && 'flex justify-center'}`}>
           <button
-            onClick={handleLogout}
+            onClick={() => { setIsMobileMenuOpen(false); handleLogout(); }}
             className={`
               flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300
               ${!isSidebarOpen && 'justify-center'}

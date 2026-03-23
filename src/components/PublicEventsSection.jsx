@@ -288,10 +288,12 @@ const PublicEventsSection = () => {
                     : (language === 'es' ? 'Evento Pagado' : 'Paid Event')
                   }
                 </span>
-                <span className="flex items-center gap-1 text-text_muted text-sm">
-                  <Users size={14} />
-                  {activeEvent.attendeeCount || 0} {language === 'es' ? 'asistentes' : 'attendees'}
-                </span>
+                {activeEvent.attendeeCount > 0 && (
+                  <span className="flex items-center gap-1 text-text_muted text-sm">
+                    <Users size={14} />
+                    {activeEvent.attendeeCount} {language === 'es' ? 'asistentes' : 'attendees'}
+                  </span>
+                )}
               </div>
 
               {/* Event Title */}

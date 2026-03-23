@@ -181,12 +181,14 @@ const EventCard = ({ event, onRegister, formatDate, formatTime }) => {
         </div>
 
         {/* Attendees Count */}
-        <div className="absolute top-4 right-4">
-          <div className="flex items-center gap-1 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full text-white text-sm">
-            <Users size={14} />
-            <span>{event.attendeeCount || 0}</span>
+        {event.attendeeCount > 0 && (
+          <div className="absolute top-4 right-4">
+            <div className="flex items-center gap-1 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full text-white text-sm">
+              <Users size={14} />
+              <span>{event.attendeeCount}</span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Content */}

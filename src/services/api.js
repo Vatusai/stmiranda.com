@@ -3,7 +3,7 @@
  * Cliente HTTP para comunicarse con el backend
  */
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : 'http://localhost:3001/api');
 
 // Helper para hacer requests
 const fetchWithAuth = async (endpoint, options = {}) => {
