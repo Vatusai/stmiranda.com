@@ -23,3 +23,7 @@ npm-debug.log*
 
 # Vite cache
 .vite/
+
+# SQLite WAL/SHM files (runtime artifacts, must not be tracked)
+*.db-shm
+*.db-wal
