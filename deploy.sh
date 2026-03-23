@@ -16,7 +16,8 @@ BRANCH="main"
 APP_NAME="stmiranda-backend"          # PM2 process name
 BACKEND_DIR="$PROJECT_DIR/backend"
 BUILD_COMMAND="npm run build"          # Vite frontend build
-BACKEND_START="node src/server.js"     # Command PM2 uses to start backend
+BACKEND_SCRIPT="src/server.js"        # Path relative to BACKEND_DIR
+BACKEND_PORT=3001                      # Used to kill stale processes before start
 NODE_ENV="production"
 # =============================================================================
 
@@ -132,11 +133,19 @@ if pm2 describe "$APP_NAME" > /dev/null 2>&1; then
   pm2 reload "$APP_NAME" --update-env
   success "PM2 process '$APP_NAME' reloaded (zero-downtime)."
 else
+  # Kill any stale process squatting on the port before first start
+  STALE_PID=$(lsof -t -i ":$BACKEND_PORT" 2>/dev/null || true)
+  if [ -n "$STALE_PID" ]; then
+    warn "Port $BACKEND_PORT in use by PID $STALE_PID — killing stale process..."
+    kill "$STALE_PID" && sleep 1
+  fi
+
   # First time — start it and save the process list
   warn "PM2 process '$APP_NAME' not found. Starting for the first time..."
-  pm2 start "$BACKEND_START" \
+  pm2 start "$BACKEND_SCRIPT" \
     --name "$APP_NAME" \
     --cwd "$BACKEND_DIR" \
+    --interpreter node \
     --env production \
     --log "$PROJECT_DIR/logs/backend.log" \
     --time
